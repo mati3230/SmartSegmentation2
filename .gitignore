@@ -1,0 +1,39 @@
+ppo2_args.json
+ppo2_test_args.json
+expert.json
+dagger_args.json
+imitation_args.json
+blacklist.txt
+
+cache/
+PointcloudScenes/
+ScannetScenes/
+models/
+logs/
+data/
+render/
+
+environment/bin/
+
+# linux
+environment/segmentation.o
+environment/segmentation_ext.so
+environment/segmentation_ext.cpython-36m-x86_64-linux-gnu.so
+environment/Jamroot
+
+# windows
+*.dll
+*.exp
+*.iobj
+*.ipdb
+*.lib
+*.log
+*.obj
+*.obj.rsp
+*.pdb
+*.vcxproj.CopyComplete
+*.vcxproj.FileListAbsolute.txt
+*.pyd
+
+# Python
+__pycache__
