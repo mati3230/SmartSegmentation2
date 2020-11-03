@@ -15,6 +15,10 @@ render/
 
 environment/bin/
 
+documentation/
+index.html
+documentation.html
+
 # linux
 environment/segmentation.o
 environment/segmentation_ext.so
