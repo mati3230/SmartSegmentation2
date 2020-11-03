@@ -4,7 +4,7 @@ from .ppo2 import PPO2
 from .base_remote_trainer import BaseRemoteTrainer
 
 
-class RemoteTrainer(BaseRemoteTrainer):
+class RemotePPO2Trainer(BaseRemoteTrainer):
     def __init__(self, args_file, types_file):
         super().__init__(args_file=args_file, types_file=types_file)
 

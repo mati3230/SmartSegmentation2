@@ -107,7 +107,7 @@ class AgentProcess(Process):
             t = threading.Thread(target=treatQueue)
             t.start()
 
-        self.env_args["id"] = self.id
+        self.env_args["batch_id"] = self.id
         self.env_args["n_cpus"] = self.n_cpus
         self.env = self.env_type(**self.env_args)
         while train:

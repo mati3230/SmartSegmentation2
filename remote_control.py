@@ -1,7 +1,7 @@
 from telegram.ext import Updater
 import logging
 from telegram.ext import MessageHandler, Filters
-from optimization.remote_trainer import RemoteTrainer
+from optimization.remote_ppo2_trainer import RemotePPO2Trainer
 from optimization.remote_pretrainer import RemotePretrainer
 from optimization.remote_imitation_trainer import RemoteImitationTrainer
 import argparse
@@ -25,7 +25,7 @@ parser.add_argument(
     help="file (relative path) to types that should match train_args (e.g. ppo2_types.json or dagger_types.json)")
 args = parser.parse_args()
 if args.train_mode == "train":
-    rem_trainer = RemoteTrainer(args.train_args, args.train_types)
+    rem_trainer = RemotePPO2Trainer(args.train_args, args.train_types)
 elif args.train_mode == "imitation":
     rem_trainer = RemoteImitationTrainer(args.train_args, args.train_types)
 else:

@@ -201,7 +201,7 @@ def sync(a, b):
         b_var.assign(a_var)
 
 
-@tf.function
+# @tf.function
 def sync2(a_vars, b):
     """Sync two networks such that $b \leftarrow a$. The networks a and b
     should have the same parameters.
