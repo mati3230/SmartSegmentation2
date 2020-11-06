@@ -6,7 +6,9 @@ from .base_remote_trainer import BaseRemoteTrainer
 
 class RemotePPO2Trainer(BaseRemoteTrainer):
     def __init__(self, args_file, types_file):
-        """Constructor.
+        """Constructor. This class specifies the train method for the PPO2
+        algorithm as PPO2-specific parameters have to be set such as the
+        clip-range epsilon (see ppo2_types.json). 
 
         Parameters
         ----------
@@ -43,7 +45,8 @@ class RemotePPO2Trainer(BaseRemoteTrainer):
         params : dictionary
             Dictionary where parameters such as the path of the environment
             class or data provider class are specified. It should also store
-            parameters for the training such as the batch size.
+            parameters for the training such as the batch size. The parameter
+            types can be found in, e.g., ppo2_types.json.
         env_type : type
             Type of the environment.
         env_args : dictionary
