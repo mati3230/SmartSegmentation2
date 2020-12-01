@@ -4,20 +4,50 @@ import os
 
 
 def mkdir(directory):
+    """Method to create a new directory.
+
+    Parameters
+    ----------
+    directory : str
+        Relative or absolute path.
+    """
     if not os.path.isdir(directory):
         os.makedirs(directory)
 
 
 def file_exists(filepath):
+    """Check if a file exists.
+
+    Parameters
+    ----------
+    filepath : str
+        Relative or absolute path to a file.
+
+    Returns
+    -------
+    boolean
+        True if the file exists.
+
+    """
     return os.path.isfile(filepath)
 
 
 def create_segments(arr, axis=None):
-    """
-    Creates a segment vector for each unique element in arr.
-    arr: Sorted array
-    axis: Axis along to which the unique elements should be created
-    Returns a segment vector.
+    """Creates a sorted segment vector for each unique element of the input
+    array.
+
+    Parameters
+    ----------
+    arr : np.ndarray
+        Unsorted Segment vector.
+    axis : int
+        Axis along to which the unique elements should be created
+
+    Returns
+    -------
+    tuple(np.ndarray, int, np.ndarray)
+        Returns a sorted segment values, number of segments, unique segment values.
+
     """
     uni_arr, uni_idxs, counts = np.unique(
         arr, return_index=True, return_counts=True, axis=axis)
@@ -32,6 +62,23 @@ def create_segments(arr, axis=None):
 
 
 def iter_uni_elements(arr, uni_arr, idxs, counts, iter_method):
+    """Helper method to apply custom operations to an array.
+
+    Parameters
+    ----------
+    arr : np.ndarray
+        Sorted array.
+    uni_arr : np.ndarray
+        Unique values of the input array.
+    idxs : np.ndarray
+        Indices of the unique values.
+    counts : np.ndarray
+        Counts of the unique values.
+    iter_method : function
+        Function that accepts the input array (np.ndarray), a unique element
+        value (int), a start index of the unique element value (int), a count
+        value for number of the unique element vlaues in the input array (int).
+    """
     for i in range(uni_arr.shape[0]):
         uni_elem = uni_arr[i]
         idx = idxs[i]
@@ -40,6 +87,21 @@ def iter_uni_elements(arr, uni_arr, idxs, counts, iter_method):
 
 
 def is_arr_visited(lst, x):
+    """Checks if the array x is in the list lst.
+
+    Parameters
+    ----------
+    lst : list(np.ndarray)
+        List of arrays.
+    x : np.ndarray
+        Array that should be checked.
+
+    Returns
+    -------
+    boolean
+        True if x is in the list.
+
+    """
     for arr in lst:
         if np.array_equal(x, arr):
             return True
@@ -47,6 +109,19 @@ def is_arr_visited(lst, x):
 
 
 def argsort_2D_mat_by_vec(X):
+    """Sorts a matrix by its row vectors.
+
+    Parameters
+    ----------
+    X : np.ndarray
+        2D Matrix.
+
+    Returns
+    -------
+    np.ndarray
+        Sorted matrix.
+
+    """
     visited = []
     offset = 0
 
@@ -75,10 +150,25 @@ def argsort_2D_mat_by_vec(X):
 
 
 def filter_small_segments(arr, small_segment_size, axis=None, verbose=False):
-    """
-    arr: A sorted array.
-    small_segment_size: Threshold to classify a small segment
-    Returns indexes of segments that are smaller than small_segment_size.
+    """Short summary.
+
+    Parameters
+    ----------
+    arr : np.ndarray
+        A sorted array.
+    small_segment_size : int
+        Threshold to classify a small segment.
+    axis : int
+        Specific axis of input array where the small segments should be
+        filtered.
+    verbose : boolean
+        If True, the remaining number of segments will be printed.
+
+    Returns
+    -------
+    np.ndarray
+        Indexes of segments that are smaller than small_segment_size.
+
     """
     uni_arr, uni_idxs, counts = np.unique(
         arr, return_index=True, return_counts=True, axis=axis)
@@ -108,6 +198,13 @@ def filter_small_segments(arr, small_segment_size, axis=None, verbose=False):
 
 
 def get_base_colors():
+    """Generate some colors.
+
+    Returns
+    -------
+    np.ndarray
+        2D Matrix where each row vector represents a color.
+    """
     return np.array([
         [0, 0, 1],
         [0, 1, 0],
@@ -118,6 +215,20 @@ def get_base_colors():
 
 
 def generate_colors(max_colors):
+    """Generate variations of the base colors that are defined in the function
+    get_base_colors().
+
+    Parameters
+    ----------
+    max_colors : int
+        Number of colors that are needed.
+
+    Returns
+    -------
+    np.ndarray
+        2D Matrix where each row vector represents a color.
+
+    """
     colors = get_base_colors()
     tmp_colors = np.array(colors, copy=True)
     n_colors = colors.shape[0]
@@ -129,6 +240,15 @@ def generate_colors(max_colors):
 
 
 def coordinate_system():
+    """Returns a coordinate system.
+
+    Returns
+    -------
+    o3d.geometry.LineSet
+        The lines of a coordinate system that are colored in red, green
+        and blue.
+
+    """
     line_set = o3d.geometry.LineSet()
     points = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]])
     colors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
@@ -141,6 +261,35 @@ def coordinate_system():
 
 def render_point_cloud(
         P, segments=None, colors=None, animate=False, x_speed=2.5, y_speed=0.0):
+    """Displays a point cloud.
+
+    Parameters
+    ----------
+    P : np.ndarray
+        Nx3 or Nx6 matrix. N is the number of points. A point should have at
+        least 3 spatial coordinates and can have optionally 3 color values.
+    segments : np.ndarray
+        A vector that contains a segment number for each point.
+    colors : np.ndarray
+        A 2D matrix where each row vector represents a color. Each label of the
+        segments vector will be assigned to a color.
+    animate : boolean
+        If True, the point cloud will be rotated with x_speed and y_speed. A
+        simulation of dragging the mouse in standard rendering mode is
+        simulated.
+    x_speed : float
+        Used if point cloud will be animated. Strength if the horizontal mouse
+        drag.
+    y_speed : float
+        Used if point cloud will be animated. Strength if the vertical mouse
+        drag.
+
+    Returns
+    -------
+    int
+        -1 in case of an exception and 1 otherwise.
+
+    """
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(P[:, :3])
     if segments is not None:
@@ -180,6 +329,28 @@ def render_point_cloud4(
         neighbour_idxs,
         P_color=np.array([1, 0, 0]),
         neighbour_color=np.array([0, 0, 1])):
+    """Visualize a superpoint and a neighbour superpoint.
+
+    Parameters
+    ----------
+    P : np.ndarray
+        The point cloud as NxM matrix. N represents the number of points. A
+        point should have at least 3 spatial coordinates.
+    P_idxs : np.ndarray
+        Indices of the superpoint.
+    neighbour_idxs : np.ndarray
+        Indices of the neighbour superpoint.
+    P_color : np.ndarray
+        Color which will be applied to the superpoints with P_idxs.
+    neighbour_color : np.ndarray
+        Color which will be applied to the superpoints with neighbour_idxs.
+
+    Returns
+    -------
+    int
+        1
+
+    """
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(P[:, :3])
     col_mat = np.zeros((P.shape[0], 3))
