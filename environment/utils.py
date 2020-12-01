@@ -155,7 +155,7 @@ def filter_small_segments(arr, small_segment_size, axis=None, verbose=False):
     Parameters
     ----------
     arr : np.ndarray
-        A sorted array.
+        Segments as sorted array with integer values.
     small_segment_size : int
         Threshold to classify a small segment.
     axis : int
@@ -348,7 +348,7 @@ def render_point_cloud4(
     Returns
     -------
     int
-        1
+        1 to indicate a successful rendering process
 
     """
     pcd = o3d.geometry.PointCloud()
@@ -362,9 +362,22 @@ def render_point_cloud4(
 
 
 def get_remaining_cloud(P, segment_indxs):
-    """
-    Returns the remaining point cloud indexes by
-    subtracting the segmented indexes.
+    """Filter points of the point cloud P by inserting the indices that should
+    be filtered.
+
+    Parameters
+    ----------
+    P : np.ndarray
+        Point cloud P.
+    segment_indxs : np.ndarray
+        Indices of points that should be filtered.
+
+    Returns
+    -------
+    tuple(np.ndarray, np.ndarray)
+        The remaining point cloud indexes by subtracting the segmented indexes.
+        The remaining points.
+
     """
     indxs = np.arange(P.shape[0])
     indxs = np.delete(indxs, segment_indxs, axis=0)
@@ -380,17 +393,31 @@ def segment(
         segment_indxs):
     """Applies the i-th segment candidate to a point cloud.
 
-    Parameters:
-    i (int): Index to segment the i-th segment candidate.
-    segment_nr (int): Current segment number - the increment will be applied
-    to the new segment.
-    remaining_indxs (numpy.ndarray): Vector - Indexes of the point cloud that
-    are remained after a previous segmentation. This can be all indexes of the
-    cloud if there was no previous segmentation applied.
-    segment_candidates (list of numpy.ndarray): List of segment candidates.
-    segments (numpy.ndarray): The assigned segment vector.
-    segment_indxs (numpy.ndarray): A vector of all indexes of the points that
-    are already segmented.
+    Parameters
+    ----------
+    i : int
+        Index to segment the i-th segment candidate..
+    segment_nr : int
+        Current segment number. The increment will be applied to the new
+        segment.
+    remaining_indxs : np.ndarray
+        Indexes of the point cloud that are remained after a previous
+        segmentation. This can be all indices of the cloud if there was no
+        previous segmentation applied.
+    segment_candidates : list(numpy.ndarray)
+        List of segment candidates.
+    segments : np.ndarray
+        The assigned segment vector.
+    segment_indxs : np.ndarray
+        A vector of all indexes of the points that are already segmented.
+
+    Returns
+    -------
+    tuple(int, np.ndarray, np.ndarray, np.ndarray)
+        The incremented segment number. The remaining indices. Updated segments
+        array with the incremented segment number. An array with all segmented
+        indices so far.
+
     """
     segment_nr = segment_nr + 1
     # new segment indices of the original cloud
@@ -404,6 +431,19 @@ def segment(
 
 
 def bubble_sort(arr):
+    """Applies the bubble sort algorithm.
+
+    Parameters
+    ----------
+    arr : np.ndarray
+        1D Array that should be sorted.
+
+    Returns
+    -------
+    np.ndarray
+        The sorted array.
+
+    """
     n = len(arr)
     for i in range(n):
         for j in range(0, n-i-1):
@@ -418,24 +458,32 @@ def compute_error(
         orig_indices,
         orig_segment_counts,
         unsegmented=0):
-    """
-    Computes the number of errorornous and unsegmented points after a
+    """Computes the number of errorornous and unsegmented points after a
     segmentation of a point cloud. The objects will be evaluated according to
     their size. The largest object will be evaluated first.
 
-    Parameters:
-    assigned_segments (np.ndarray, NX1): Assigned segments vector.
-    orig_segment_values (np.ndarray, NX1): The true segments vector.
-        Has to be sorted according to segments.
-    unsegmented (int): Number that symbolizes an unsegmented point.
+    Parameters
+    ----------
+    assigned_segments : np.ndarray
+        Assigned segments vector.
+    orig_segment_values : np.ndarray
+        The true segments vector. Should be sorted according to segment values.
+    orig_indices : np.ndarray
+        Description of parameter `orig_indices`.
+    orig_segment_counts : np.ndarray
+        Description of parameter `orig_segment_counts`.
+    unsegmented : int
+        Number that indicates an unsegmented point.
 
-    Returns:
-    n_errornous_points (int): Number of errorornous points.
-    n_unsegmented_points (int): Number of unsegmented points.
-    diff (int): Difference of the number of objects in the true and assigned
-    segments vectors.
-    assignments (dict): Mapping from a segment of the true segments vector to a
-    segment number of the assigned segments vector.
+    Returns
+    -------
+    tuple(int, int, int, dict(int, int), np.ndarray, list(int))
+        Number of errorornous points. Number of unsegmented points. Difference
+        of the number of objects in the true and assigned segments vectors.
+        Mapping from a segment of the true segments vector to a segment number
+        of the assigned segments vector. Array where a reward is stored for
+        each segment. List of segments that could be rewarded.
+
     """
     intervals = []
 
@@ -576,6 +624,25 @@ def compute_error(
 
 
 def get_interval(orig_seg_idx, orig_indices, orig_segment_counts):
+    """Interval of a certain ground truth segment value.
+
+    Parameters
+    ----------
+    orig_seg_idx : int
+        Index of a certain ground truth segment.
+    orig_indices : np.ndarray
+        Start indices of a sorted ground truth segments array. The indices can
+        result from a np.uniquee operation.
+    orig_segment_counts : np.ndarray
+        Counts of the ground truth segment values. The counts can result from a
+        np.uniquee operation.
+
+    Returns
+    -------
+    tuple(int, int, int)
+        Start index, length and stop index of a certain ground truth segment.
+
+    """
     start = orig_indices[orig_seg_idx]
     length = orig_segment_counts[orig_seg_idx]
     stop = start + length
@@ -589,24 +656,32 @@ def compute_error1(
         orig_segment_counts,
         assignments,
         unsegmented=0):
-    """
-    Computes the number of errorornous and unsegmented points after a
+    """Computes the number of errorornous and unsegmented points after a
     segmentation of a point cloud. The objects will be evaluated according to
     their size. The largest object will be evaluated first.
 
-    Parameters:
-    assigned_segments (np.ndarray, NX1): Assigned segments vector.
-    orig_segment_values (np.ndarray, NX1): The true segments vector.
-        Has to be sorted according to segments.
-    unsegmented (int): Number that symbolizes an unsegmented point.
+    Parameters
+    ----------
+    assigned_segments : np.ndarray
+        Assigned segments vector.
+    orig_segment_values : np.ndarray
+        The true segments vector. Should be sorted according to segment values.
+    orig_indices : np.ndarray
+        Description of parameter `orig_indices`.
+    orig_segment_counts : np.ndarray
+        Description of parameter `orig_segment_counts`.
+    unsegmented : int
+        Number that indicates an unsegmented point.
 
-    Returns:
-    n_errornous_points (int): Number of errorornous points.
-    n_unsegmented_points (int): Number of unsegmented points.
-    diff (int): Difference of the number of objects in the true and assigned
-    segments vectors.
-    assignments (dict): Mapping from a segment of the true segments vector to a
-    segment number of the assigned segments vector.
+    Returns
+    -------
+    tuple(int, int, int, dict(int, int), np.ndarray, list(int))
+        Number of errorornous points. Number of unsegmented points. Difference
+        of the number of objects in the true and assigned segments vectors.
+        Mapping from a segment of the true segments vector to a segment number
+        of the assigned segments vector. Array where a reward is stored for
+        each segment. List of segments that could be rewarded.
+
     """
     intervals = []
 
