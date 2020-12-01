@@ -21,6 +21,46 @@ class MasterProcess():
             agent_process_args=None,
             async_mode=False,
             **kwargs):
+        """Constructor.
+
+        Parameters
+        ----------
+        n_process : int
+            Number of agent processes.
+        n_samples : int
+            Number of samples that should be acquired.
+        agent_type : type
+            Class type of the agent to generate a copy in the agent processes.
+        agent_args : dict
+            Input arguments of the agent class to generate a copy in the agent
+            processes.
+        env_type : type
+            Class type of the environment to generate a copy in the agent
+            processes.
+        env_args : dict
+            Input arguments of the environment class to generate a copy in the
+            agent processes.
+        model_dir : str
+            Directory where the models will be stored.
+        model_filename : str
+            Filename of a model that will be stored.
+        agent : BasePolicy
+            Agent (i.e. neural network) that should be trained.
+        agent_process_type : type
+            Class type of the agent process.
+        seed : int
+            Random seed that should be used by the agent processes.
+        shared_value : Multiprocessing.Value
+            Flag to indicate that the agent processes should stop the sample
+            collection.
+        agent_process_args : dict
+            Input arguments of an agent process.
+        async_mode : boolean
+            If True, samples will collected while the agent is trained to speed
+            up the procedure, i.e. a non-blocking training process.
+        **kwargs : dict
+            Additional arguments.
+        """
         mp.set_start_method("spawn", force=True)
         self.processes = {}
         self.n_process = n_process
@@ -41,6 +81,9 @@ class MasterProcess():
         self.async_mode = async_mode
 
     def sample_transitions(self):
+        """Method to start the sample collections. Agent processes will be
+        spawned.
+        """
         pipes = {}
         for i in range(self.n_process):
             parent_conn, child_conn = mp.Pipe()
