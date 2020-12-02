@@ -148,10 +148,12 @@ class MultiProcessTrainer():
 
         """
         # get the number of test scenes
-        if self.env._data_prov.train_mode:
-            n_test_scenes = len(self.env._data_prov.test_scenes)
-        else:
-            n_test_scenes = len(self.env._data_prov.scenes)
+        n_test_scenes=1
+        if hasattr(self.env, "_data_prov"):
+            if self.env._data_prov.train_mode:
+                n_test_scenes = len(self.env._data_prov.test_scenes)
+            else:
+                n_test_scenes = len(self.env._data_prov.scenes)
         # update the test policy
         sync(self.policy, self.test_policy)
         policy = self.test_policy
@@ -185,8 +187,11 @@ class MultiProcessTrainer():
             rewards.append(episode_reward)
             steps.append(episode_length)
         mean_ratio = np.mean(ratios)
+        mean_reward = np.mean(rewards)
         # log the containers
         with self.train_summary_writer.as_default():
+            tf.summary.scalar(
+                "test/mean_reward", mean_reward, step=self.test_step)
             tf.summary.scalar(
                 "test/rew_steps", mean_ratio, step=self.test_step)
             tf.summary.scalar(

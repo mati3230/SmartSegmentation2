@@ -92,7 +92,7 @@ class BaseRemoteTrainer(ABC):
         env_type = get_type(params["env_path"], params["env_type"])
 
         env_args = {}
-        if params["data_provider_path"]:
+        if "data_provider_path" in params:
             if params["data_provider_path"] != "":
                 data_prov_type = get_type(
                     params["data_provider_path"], "DataProvider")

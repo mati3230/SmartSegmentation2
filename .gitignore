@@ -1,5 +1,6 @@
 ppo2_args.json
 ppo2_test_args.json
+ppo2_gym_args.json
 expert.json
 dagger_args.json
 imitation_args.json

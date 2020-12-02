@@ -746,8 +746,8 @@ class SuperpointGrowingEnv(BaseEnvironment):
 
         Parameters
         ----------
-        train : type
-            Description of parameter `train`.
+        train : boolean
+            Will the agent train with the environment?
 
         Returns
         -------

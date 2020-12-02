@@ -9,14 +9,42 @@ class BaseEnvironment(ABC):
 
     @abstractmethod
     def step(self, action):
+        """Apply an action in the environment.
+
+        Parameters
+        ----------
+        action : int
+            A valid action of the environment.
+
+        Returns
+        -------
+        tuple(np.ndarray, float, boolean, dict)
+            Should return the next observation, a reward value, flag if episode
+            is finished and addtitional information.
+
+        """
         pass
 
     @abstractmethod
     def render(self):
+        """Rendering of the environment."""
         pass
 
     @abstractmethod
-    def reset(self):
+    def reset(self, train=True):
+        """Resets the environment.
+
+        Parameters
+        ----------
+        train : boolean
+            Will the agent train with the environment?
+
+        Returns
+        -------
+        np.ndarray
+            The initial observation.
+
+        """
         pass
 
     @abstractmethod
