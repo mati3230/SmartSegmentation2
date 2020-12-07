@@ -6,6 +6,23 @@ import math
 
 
 def create_scene(scene_id, dat_p, args):
+    """Short summary.
+
+    Parameters
+    ----------
+    scene_id : int
+        Description of parameter `scene_id`.
+    dat_p : BaseDataProvider
+        Data Provider.
+    args : dict
+        Arguments of the VCCS algorithm.
+
+    Returns
+    -------
+    Scene
+        Point cloud scene that is processed by the VCCS algorithm.
+
+    """
     return Scene(
         id=scene_id,
         get_cloud_and_segments=dat_p.get_cloud_and_segments,
@@ -17,6 +34,18 @@ def create_scene(scene_id, dat_p, args):
 
 
 def process_range(id, min_i, max_i):
+    """Processes a range of scene from min to max. This method is used for
+    parallel processing.
+
+    Parameters
+    ----------
+    id : int
+        Worker ID.
+    min_i : type
+        Minimum index of the scene.
+    max_i : type
+        Maximum index of the scene.
+    """
     print(id, max_i, min_i, max_i - min_i)
     dat_p = DataProvider(max_scenes=2000)
     for i in range(min_i, max_i):
@@ -33,6 +62,14 @@ def process_range(id, min_i, max_i):
 
 
 def main(args):
+    """Main entry point to generate a cache for the scenes.
+
+    Parameters
+    ----------
+    args : dict
+        Arguments, e.g. of the VCCS algorithm, to process the scenes.
+
+    """
     dat_p = DataProvider(max_scenes=2000)
     if args.mode == "visualize_single":
         scene_id = args.scene

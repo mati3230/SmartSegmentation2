@@ -11,6 +11,16 @@ class CloudProjector:
     def __init__(
             self,
             state_size):
+        """Constructor. Class that produces rendered images from a point cloud.
+        Four rendered images will be produced. Have a look at the publication
+        for the setup of the cameras
+
+        Parameters
+        ----------
+        state_size : tuple(int)
+            Tuple of integer values. Should be the size of the observation. The
+            width and height is extracted from the elements [1] and [2].
+        """
         self.width = int(state_size[1])
         height = int(state_size[2])
         self.imgs = np.zeros(state_size)
@@ -51,6 +61,21 @@ class CloudProjector:
             axis=self.axis_2)
 
     def reset_for_img(self, t):
+        """Create a new transformation matrix to transform the cameras.
+
+        Parameters
+        ----------
+        t : np.ndarray
+            3x4 Matrix. Translation of each camera is stored as 3x1 column
+            vector.
+
+        Returns
+        -------
+        np.ndarray
+            3D array. The first dimension specifies the transformation matrix
+            for each camera.
+
+        """
         Rt = np.eye(4)
         Rt = np.tile(Rt, (self.imgs.shape[0], 1, 1))
         Rt[0, :3, :3] = self.r1
@@ -64,6 +89,19 @@ class CloudProjector:
         return Rt
 
     def preprocess(self, state):
+        """Transform the point cloud to 4 images.
+
+        Parameters
+        ----------
+        state : np.ndarray
+            Observation of the environment.
+
+        Returns
+        -------
+        np.ndarray
+            Array with 4 images.
+
+        """
         P = np.array(state[0][:, :3])
         C = np.array(state[0][:, 3:])
         # transform color values in the range of 0 to 1

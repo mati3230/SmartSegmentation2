@@ -13,34 +13,76 @@ from scipy.spatial.transform import Rotation as R
 from sklearn.decomposition import PCA
 import argparse
 import math
+from utils import get_rotation_mat
 
 
 def unit_vector(vector):
-    """ Returns the unit vector of the vector.  """
+    """Returns the normalized vector.
+
+    Parameters
+    ----------
+    vector : np.ndarray
+        Vector that should be normalized.
+
+    Returns
+    -------
+    np.ndarray
+        Normalized Vector.
+
+    """
     return vector / np.linalg.norm(vector)
 
 
 def angle(v1, v2):
-    """ Returns the angle in radians between vectors 'v1' and 'v2'::
-
+    """Returns the angle in radians between vectors 'v1' and 'v2':
             >>> angle_between((1, 0, 0), (0, 1, 0))
             1.5707963267948966
             >>> angle_between((1, 0, 0), (1, 0, 0))
             0.0
             >>> angle_between((1, 0, 0), (-1, 0, 0))
             3.141592653589793
+
+    Parameters
+    ----------
+    v1 : np.ndarray
+        Vector.
+    v2 : np.ndarray
+        Vector.
+
+    Returns
+    -------
+    float
+        The angle in radians between vectors 'v1' and 'v2'.
+
     """
     v1_u = unit_vector(v1)
     v2_u = unit_vector(v2)
     return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
 
 
-def get_rotation_mat(angle, axis):
-    r = R.from_rotvec(angle * axis)
-    return r.as_matrix()
-
-
 def split_segments(segments, P, dist=0.5, verbose=False):
+    """Split segments that has the same label but are distant in the point
+    cloud.
+
+    Parameters
+    ----------
+    segments : np.ndarray
+        Vector with segments.
+    P : np.ndarray
+        Input point cloud.
+    dist : float
+        Threshold. If distance points in segments is greater than dist, than
+        the segment will be split.
+    verbose : boolean
+        If true, progress will be printed.
+
+    Returns
+    -------
+    tuple(np.ndarray, int)
+        newly assigned segments and the number of segments that where produced
+        by the split operations.
+
+    """
     uni_segments, idxs, counts = np.unique(
         segments, return_index=True, return_counts=True)
     segments_r = np.zeros(segments.shape, dtype=np.int32)
@@ -75,6 +117,31 @@ def load(
         save_path,
         small_segment_size=12,
         verbose=False):
+    """Load a point cloud and start with some preprocessing steps.
+
+    Parameters
+    ----------
+    segments_filepath : str
+        Path to the file in which the segments are stored.
+    color_filepath : str
+        Path to the point cloud with the color values (color per point).
+    filtered_idxs_filepath : str
+        Path to txt file to filter the color values.
+    save_path : str
+        Where to save the processing result.
+    small_segment_size : int
+        Threshold to specify a small segments. The small segments will be
+        deleted.
+    verbose : boolean
+        If True, the number of segments will be printed.
+
+    Returns
+    -------
+    tuple(np.ndarray, np.ndarray, np.ndarray)
+        The point cloud, the color matrix of the points and the segments
+        vector.
+
+    """
     if os.path.isfile(save_path):
         # load
         data = np.load(save_path)
@@ -196,6 +263,23 @@ class DataProvider(environment.base_data_provider.BaseDataProvider):
             self.scenes = self.scenes[:self.max_scenes]
 
     def next_id(self, scenes, idx, idxs=None):
+        """Returns the next scene id.
+
+        Parameters
+        ----------
+        scenes : list(Scene)
+            List with point cloud scenes.
+        idx : int
+            The current scene index.
+        idxs : list(int)
+            Special indexes from which a scene should be chosen.
+
+        Returns
+        -------
+        int
+            next scene id
+
+        """
         if idxs is not None:
             _idx = idxs[idx]
             self.id = scenes[_idx]
@@ -211,6 +295,20 @@ class DataProvider(environment.base_data_provider.BaseDataProvider):
         return idx
 
     def select_id(self, train=True):
+        """Select the next scene id.
+
+        Parameters
+        ----------
+        train : boolean
+            If True, the scenes will be splitted sampled train scenes. If
+            False, from the test scenes. This is only in train_mode relevant.
+
+        Returns
+        -------
+        int
+            ID of the current scene.
+
+        """
         if self.train_mode:
             if train:
                 self.train_idx = self.next_id(
@@ -223,6 +321,23 @@ class DataProvider(environment.base_data_provider.BaseDataProvider):
         return self.id
 
     def get_cloud_and_segments(self, dist=0.2, small_segment_size=250):
+        """Get the point cloud and the segment values.
+
+        Parameters
+        ----------
+        dist : float
+            Threshold. If distance points in segments is greater than dist, than
+            the segment will be split.
+        small_segment_size : int
+            Threshold to specify a small segments. The small segments will be
+            deleted.
+
+        Returns
+        -------
+        tuple(np.ndarray, np.ndarray, int)
+            The point cloud, the segments and the scene id.
+
+        """
         segments_filepath = "./ScannetScenes/" + self.id + "/" + self.id + "_segments.pcd"
         color_filepath = "./ScannetScenes/" + self.id + "/" + self.id + "_color.pcd"
         filtered_idxs_filepath = "./ScannetScenes/" + self.id + "/" + self.id + "_indices.txt"

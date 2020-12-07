@@ -6,6 +6,19 @@ import time
 
 
 def get_bounding_box(P):
+    """Get the bounding box of a point cloud P.
+
+    Parameters
+    ----------
+    P : np.ndarray
+        Point cloud.
+
+    Returns
+    -------
+    tuple(float, float, float, float, float, float)
+        Bounding box.
+
+    """
     return (
             np.min(P[:, 0]),
             np.max(P[:, 0]),
@@ -16,11 +29,47 @@ def get_bounding_box(P):
 
 
 def get_rotation_mat(angle, axis):
+    """Returns the rotation matrix from an angle and axis.
+
+    Parameters
+    ----------
+    angle : float
+        Angle of the rotation.
+    axis : int
+        Axis (x, y, z) of the rotation.
+
+    Returns
+    -------
+    np.ndarray
+        3x3 rotation matrix.
+
+    """
     r = Rot.from_rotvec(angle * axis)
     return r.as_matrix()
 
 
 def gl_perspective(angle_of_view, aspect_ratio, n):
+    """Set up the variables that are necessary to compute the perspective
+    projection matrix. See also:
+    https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluPerspective.xml
+
+    Parameters
+    ----------
+    angle_of_view : float
+         Specifies the field of view angle, in degrees, in the y direction.
+    aspect_ratio : float
+        Specifies the aspect ratio that determines the field of view in the x
+        direction. The aspect ratio is the ratio of x (width) to y (height).
+    n : float
+        Specifies the distance from the viewer to the near clipping plane
+        (always positive).
+
+    Returns
+    -------
+    tuple(float, float, float, float)
+        Right, left, top, bottom.
+
+    """
     scale = np.tan(angle_of_view * 0.5 * np.pi / 180) * n
     r = aspect_ratio * scale
     l = -r
@@ -30,6 +79,29 @@ def gl_perspective(angle_of_view, aspect_ratio, n):
 
 
 def gl_frustum(b, t, l, r, n, f):
+    """Set up the perspective projection matrix.
+
+    Parameters
+    ----------
+    b : float
+        Bottom.
+    t : float
+        Top.
+    l : float
+        Left.
+    r : float
+        Left.
+    n : float
+        Distance of the near plane.
+    f : float
+        Distance of the far plane.
+
+    Returns
+    -------
+    np.ndarray
+        Perspective projection matrix..
+
+    """
     M = np.zeros((4, 4))
     M[0, 0] = 2 * n / (r - l)
     M[1, 1] = 2 * n / (t - b)
@@ -44,6 +116,21 @@ def gl_frustum(b, t, l, r, n, f):
 
 
 def mult_points_matrix(M, P):
+    """Multiply the point cloud by a transformation matrix M.
+
+    Parameters
+    ----------
+    M : np.ndarray
+        Transformation matrix.
+    P : np.ndarray
+        Point cloud.
+
+    Returns
+    -------
+    np.ndarray
+        Transformed point cloud.
+
+    """
     P_ = np.matmul(M, P)
     P_[:3, :] = P_[:3, :] / P_[3, :]
     return P_
@@ -58,6 +145,34 @@ def PtoImg(
         height,
         t,
         rotation_mat=np.eye(3)):
+    """Perspective projection of a point cloud to an image.
+
+    Parameters
+    ----------
+    P : np.ndarray
+        Point cloud (X, Y, Z coordinates only).
+    C : np.ndarray
+        Color matrix of the points in the form nx3 where n is the number of
+        points.
+    M_proj : np.ndarray
+        Projection matrix.
+    aspect_ratio : float
+        Description of parameter `aspect_ratio`.
+    width : int
+        Width of the output image.
+    height : int
+        Height of the output image.
+    t : np.ndarray
+        Translation of the camera.
+    rotation_mat : np.ndarray
+        Rotation matrix to rotate the camera.
+
+    Returns
+    -------
+    np.ndarray
+        Rendered image of the point cloud with a perspective camera.
+
+    """
     img = np.zeros((width, height, 3))
 
     P = np.vstack((P, np.ones((1, P.shape[1]))))
@@ -111,6 +226,35 @@ def PtoImg1(
         width,
         height,
         Rt):
+    """Perspective projection of a point cloud to an image.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        The image that should be returned.
+    P : np.ndarray
+        Point cloud (X, Y, Z coordinates only).
+    C : np.ndarray
+        Color matrix of the points in the form nx3 where n is the number of
+        points.
+    M_proj : np.ndarray
+        Projection matrix.
+    aspect_ratio : float
+        Description of parameter `aspect_ratio`.
+    width : int
+        Width of the output image.
+    height : int
+        Height of the output image.
+    Rt : np.ndarray
+        Transformation matrix to transform the camera (rotation and
+        translation).
+
+    Returns
+    -------
+    np.ndarray
+        Rendered image of the point cloud with a perspective camera.
+
+    """
     # transform points into camera space
     M_proj = np.matmul(M_proj, Rt)
 
@@ -160,7 +304,7 @@ def mult_points_matrix1(M, P):
 
     Returns
     -------
-    type
+    tf.Tensor
         Project point cloud (B X 3 X |P|).
 
     """
@@ -250,6 +394,19 @@ def PtoImg2(P, M_proj, Rt, wh):
 
 
 def grad_to_rad(angle):
+    """Transforms an angle from degrees to radians.
+
+    Parameters
+    ----------
+    angle : float
+        Angle in degrees.
+
+    Returns
+    -------
+    float
+        Transforms an angle from degrees to radians.
+
+    """
     return (angle / 180) * np.pi
 
 

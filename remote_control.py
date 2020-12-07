@@ -33,6 +33,16 @@ else:
 
 
 def on_msg_recv(update, context):
+    """Callback method when the user inputs a telegram command. Commands will
+    be forwarded to the remote trainer.
+
+    Parameters
+    ----------
+    update : type
+        See telegram API.
+    context : type
+        See telegram API.
+    """
     # print(update.message.text)
     global rem_trainer
     if not update.message:
@@ -46,6 +56,7 @@ def on_msg_recv(update, context):
 
 
 def main():
+    """Starts the telegram communication."""
     updater = Updater(
         token=rem_trainer.params["token"],
         use_context=True)
