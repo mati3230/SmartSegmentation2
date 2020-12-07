@@ -5,8 +5,10 @@ from .utils import normalize
 from .base_pretrainer import BasePretrainer
 from .tf_utils import sync
 
+from deprecated import deprecated
 
 class DAgger(BasePretrainer):
+    @deprecated
     def __init__(
             self,
             optimizer,

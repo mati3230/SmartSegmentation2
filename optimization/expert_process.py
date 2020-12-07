@@ -1,8 +1,10 @@
 import numpy as np
 from .agent_process import AgentProcess
 
+from deprecated import deprecated
 
 class ExpertProcess(AgentProcess):
+    @deprecated
     def __init__(
             self,
             conn,

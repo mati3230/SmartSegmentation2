@@ -88,7 +88,20 @@ class ActorCritic(BasePolicy):
         return action_probs, features
 
     @abstractmethod
-    def preprocess(self, state):
+    def preprocess(self, obs):
+        """Optional preprocessing of the observation.
+
+        Parameters
+        ----------
+        obs : np.ndarray
+            The observation.
+
+        Returns
+        -------
+        np.ndarray
+            Observation that can be input in the neural net.
+
+        """
         pass
 
     @tf.function
@@ -210,6 +223,34 @@ class ActorCritic(BasePolicy):
             seed=None,
             initializer="glorot_uniform",
             mode="full"):
+        """Initialize the variables/layers that process the output of the
+        feature extractor.
+
+        Parameters
+        ----------
+        name : str
+            Name of the policy.
+        n_ft_outpt : int
+            Number of features that should be calculated by the feature
+            detector.
+        n_actions : int
+            Number of available actions.
+        seed : int
+            Random seed that should be used by the agent processes.
+        stddev : float
+            (Deprecated) Standard deviation of a gaussian with zero mean to
+            initialize the neurons.
+        trainable : boolean
+            If True the value of the neurons can be changed.
+        check_numerics : boolean
+            If True numeric values will be checked in tensorflow calculation to
+            detect, e.g., NaN values.
+        initializer : str
+            Keras initializer that will be used (e.g. orthogonal).
+        mode : str
+            Full or Half. If Half, then only the action without the value will
+            be calculated.
+        """
         pass
 
     @abstractmethod
@@ -223,20 +264,82 @@ class ActorCritic(BasePolicy):
             check_numerics=False,
             initializer="glorot_uniform",
             mode="full"):
+        """Initialize the feature extractor.
+
+        Parameters
+        ----------
+        name : str
+            Name of the policy.
+        n_ft_outpt : int
+            Number of features that should be calculated by the feature
+            detector.
+        n_actions : int
+            Number of available actions.
+        seed : int
+            Random seed that should be used by the agent processes.
+        stddev : float
+            (Deprecated) Standard deviation of a gaussian with zero mean to
+            initialize the neurons.
+        trainable : boolean
+            If True the value of the neurons can be changed.
+        check_numerics : boolean
+            If True numeric values will be checked in tensorflow calculation to
+            detect, e.g., NaN values.
+        initializer : str
+            Keras initializer that will be used (e.g. orthogonal).
+        mode : str
+            Full or Half. If Half, then only the action without the value will
+            be calculated.
+        """
         pass
 
     @abstractmethod
     def latent_action(self, features):
+        """Compute a latent feature representation.
+
+        Parameters
+        ----------
+        features : tf.Tensor
+            Feature vector.
+
+        Returns
+        -------
+        tf.Tensor
+            Latent feature representation.
+
+        """
         pass
 
     @abstractmethod
     def latent_value(self, features):
+        """Compute a latent feature representation.
+
+        Parameters
+        ----------
+        features : tf.Tensor
+            Feature vector.
+
+        Returns
+        -------
+        tf.Tensor
+            Latent feature representation.
+
+        """
         pass
 
     @abstractmethod
     def get_vars(self):
+        """Returns the weights of the neural net.
+
+        Returns
+        -------
+        list(tf.Tensor)
+            List of the weight tensors.
+
+        """
         pass
 
     @abstractmethod
     def reset(self):
+        """Reset the neural net."""
         pass

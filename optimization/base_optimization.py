@@ -48,6 +48,14 @@ class BaseOptimization(ABC):
 
     @abstractmethod
     def get_online_policy(self):
+        """Returns policy that should be optimized.
+
+        Returns
+        -------
+        BasePolicy
+            Policy that should be optimized.
+
+        """
         pass
 
     @abstractmethod
@@ -57,10 +65,33 @@ class BaseOptimization(ABC):
             n_actions,
             check_numerics,
             **kwargs):
+        """Create policies that are necessary for the optimization algorithm.
+
+        Parameters
+        ----------
+        policy_type : BasePolicy
+            Type of the policy.
+        n_actions : int
+            Number of actions in the environment.
+        check_numerics : boolean
+            If True, an exception is thrown in case of NaN values.
+        **kwargs : dict
+            Additional arguments.
+        """
         pass
 
     @abstractmethod
-    def update(self, buf, step):
+    def update(self, transitions, step):
+        """Update/train the policy.
+
+        Parameters
+        ----------
+        transitions : dictionary
+            Transitions of the environment.
+        step : int
+            Global step number of the update. It is used to log values in
+            tensorboard.
+        """
         pass
 
     @abstractmethod

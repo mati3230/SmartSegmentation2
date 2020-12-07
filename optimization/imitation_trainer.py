@@ -4,8 +4,10 @@ from .base_pretrainer import BasePretrainer
 import os
 import random
 
+from deprecated import deprecated
 
 class ImitationPretrainer(BasePretrainer):
+    @deprecated
     def __init__(
             self,
             learner,

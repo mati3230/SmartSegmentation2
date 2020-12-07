@@ -4,7 +4,6 @@ import numpy as np
 
 
 class BasePolicy(ABC):
-
     def __init__(
             self,
             name,
@@ -16,6 +15,33 @@ class BasePolicy(ABC):
             check_numerics=False,
             initializer="glorot_uniform",
             mode="full"):
+        """Contructor. Uses by default no lstm.
+
+        Parameters
+        ----------
+        name : str
+            Name of the policy.
+        n_ft_outpt : int
+            Number of features that should be calculated by the feature
+            detector.
+        n_actions : int
+            Number of available actions.
+        seed : int
+            Random seed that should be used by the agent processes.
+        stddev : float
+            (Deprecated) Standard deviation of a gaussian with zero mean to
+            initialize the neurons.
+        trainable : boolean
+            If True the value of the neurons can be changed.
+        check_numerics : boolean
+            If True numeric values will be checked in tensorflow calculation to
+            detect, e.g., NaN values.
+        initializer : str
+            Keras initializer that will be used (e.g. orthogonal).
+        mode : str
+            Full or Half. If Half, then only the action without the value will
+            be calculated.
+        """
         super().__init__()
         self.use_lstm = False
         self.name = name
@@ -47,7 +73,20 @@ class BasePolicy(ABC):
         # self.reset()
 
     @abstractmethod
-    def action(self, state):
+    def action(self, obs):
+        """Action selection of the actor critic model.
+
+        Parameters
+        ----------
+        obs : np.ndarray
+            Observation.
+
+        Returns
+        -------
+        int
+            The chosen action
+
+        """
         pass
 
     @abstractmethod
@@ -61,6 +100,34 @@ class BasePolicy(ABC):
             seed=None,
             initializer="glorot_uniform",
             mode="full"):
+        """Initialize the variables/layers that process the output of the
+        feature extractor.
+
+        Parameters
+        ----------
+        name : str
+            Name of the policy.
+        n_ft_outpt : int
+            Number of features that should be calculated by the feature
+            detector.
+        n_actions : int
+            Number of available actions.
+        seed : int
+            Random seed that should be used by the agent processes.
+        stddev : float
+            (Deprecated) Standard deviation of a gaussian with zero mean to
+            initialize the neurons.
+        trainable : boolean
+            If True the value of the neurons can be changed.
+        check_numerics : boolean
+            If True numeric values will be checked in tensorflow calculation to
+            detect, e.g., NaN values.
+        initializer : str
+            Keras initializer that will be used (e.g. orthogonal).
+        mode : str
+            Full or Half. If Half, then only the action without the value will
+            be calculated.
+        """
         pass
 
     @abstractmethod
@@ -74,24 +141,97 @@ class BasePolicy(ABC):
             check_numerics=False,
             initializer="glorot_uniform",
             mode="full"):
+        """Initialize the feature extractor.
+
+        Parameters
+        ----------
+        name : str
+            Name of the policy.
+        n_ft_outpt : int
+            Number of features that should be calculated by the feature
+            detector.
+        n_actions : int
+            Number of available actions.
+        seed : int
+            Random seed that should be used by the agent processes.
+        stddev : float
+            (Deprecated) Standard deviation of a gaussian with zero mean to
+            initialize the neurons.
+        trainable : boolean
+            If True the value of the neurons can be changed.
+        check_numerics : boolean
+            If True numeric values will be checked in tensorflow calculation to
+            detect, e.g., NaN values.
+        initializer : str
+            Keras initializer that will be used (e.g. orthogonal).
+        mode : str
+            Full or Half. If Half, then only the action without the value will
+            be calculated.
+        """
         pass
 
     @abstractmethod
     def get_vars(self):
+        """Returns the weights of the neural net.
+
+        Returns
+        -------
+        list(tf.Tensor)
+            List of the weight tensors.
+
+        """
         pass
 
     @abstractmethod
     def reset(self):
+        """Reset the neural net."""
         pass
 
     @abstractmethod
-    def preprocess(self, state):
+    def preprocess(self, obs):
+        """Optional preprocessing of the observation.
+
+        Parameters
+        ----------
+        obs : np.ndarray
+            The observation.
+
+        Returns
+        -------
+        np.ndarray
+            Observation that can be input in the neural net.
+
+        """
         pass
 
     def preprocess_action(self, action):
+        """Optional preprocessing of the action. This method can be overwritten.
+        For example, the method is useful if the action is returned as
+        tf.Tensor.
+
+        Parameters
+        ----------
+        action : int
+            The action.
+
+        Returns
+        -------
+        int
+            The action as int.
+
+        """
         return action
 
     def save(self, directory, filename):
+        """Save the weights of the neural net as npz file.
+
+        Parameters
+        ----------
+        directory : str
+            Directory where the weights should be saved.
+        filename : str
+            Filename - e.g. name of the neural net.
+        """
         mkdir(directory)
         vars_ = self.get_vars()
         var_dict = {}
@@ -100,6 +240,15 @@ class BasePolicy(ABC):
         np.savez(directory + "/" + filename + ".npz", **var_dict)
 
     def load(self, directory, filename):
+        """Load the weights of the neural net from a npz file.
+
+        Parameters
+        ----------
+        directory : str
+            Directory where the weights should be saved.
+        filename : str
+            Filename - e.g. name of the neural net.
+        """
         # print("load", directory, filename, "...")
         filepath = directory + "/" + filename + ".npz"
         if not file_exists(filepath):

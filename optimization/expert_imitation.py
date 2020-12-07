@@ -8,8 +8,10 @@ from .expert_process import ExpertProcess
 import cv2
 import time
 
+from deprecated import deprecated
 
 class ExpertImitation(BasePretrainer):
+    @deprecated
     def __init__(
             self,
             n_cpus,

@@ -4,8 +4,10 @@ from .utils import get_type
 import tensorflow as tf
 import numpy as np
 
+from deprecated import deprecated
 
 class RemotePretrainer(BaseRemoteTrainer):
+    @deprecated
     def __init__(self, args_file, types_file):
         super().__init__(args_file=args_file, types_file=types_file)
 
