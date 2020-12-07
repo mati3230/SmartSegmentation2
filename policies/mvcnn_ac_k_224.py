@@ -1,6 +1,6 @@
 import tensorflow as tf
 import tensorflow.keras as k
-from mvcnn_k_224 import MVCNN
+from .mvcnn_k_224 import MVCNN
 from cloud_projector import CloudProjector
 from optimization.actor_critic import ActorCritic
 import numpy as np

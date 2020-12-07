@@ -1,12 +1,12 @@
 import tensorflow as tf
 import tensorflow.keras as k
-from dense_net_k_224 import DenseNet
+from .mvcnn_k import MVCNN
 from cloud_projector import CloudProjector
 from optimization.actor_critic import ActorCritic
 import numpy as np
 
 
-class DenseNet_AC(ActorCritic):
+class MVCNN_AC(ActorCritic):
     def __init__(
             self,
             name,
@@ -18,7 +18,7 @@ class DenseNet_AC(ActorCritic):
             check_numerics=False,
             trainable=True,
             stateful=False,
-            initializer="he_normal",
+            initializer="glorot_uniform",
             mode="full",
             **kwargs):
         self.stateful = stateful
@@ -43,9 +43,9 @@ class DenseNet_AC(ActorCritic):
             stddev=0.3,
             trainable=True,
             check_numerics=False,
-            initializer="he_normal",
+            initializer="glorot_uniform",
             mode="full"):
-        self.net = DenseNet(
+        self.net = MVCNN(
             name=name,
             outpt=n_ft_outpt,
             trainable=trainable,
@@ -63,16 +63,16 @@ class DenseNet_AC(ActorCritic):
             trainable=True,
             stddev=0.3,
             seed=None,
-            initializer="he_normal",
+            initializer="glorot_uniform",
             mode="full"):
         self.a1 = k.layers.Dense(
-            units=36,
+            units=32,
             name=name+"/d_a_1",
             trainable=trainable,
             activation="relu",
             kernel_initializer=initializer)
         self.a2 = k.layers.Dense(
-            units=12,
+            units=8,
             name=name+"/d_a_2",
             trainable=trainable,
             activation="relu",
@@ -86,13 +86,13 @@ class DenseNet_AC(ActorCritic):
         if mode == "half":
             return
         self.v1 = k.layers.Dense(
-            units=36,
+            units=32,
             name=name+"/d_v_1",
             trainable=trainable,
             activation="relu",
             kernel_initializer=initializer)
         self.v2 = k.layers.Dense(
-            units=12,
+            units=8,
             name=name+"/d_v_2",
             trainable=trainable,
             activation="relu",
@@ -150,8 +150,6 @@ class DenseNet_AC(ActorCritic):
         return self.cloud_projector.preprocess(state)
 
     def reset(self):
-        if self.mode == "pre":
-            return
         self.net.reset()
 
     def get_head_vars(self):
@@ -181,17 +179,17 @@ class DenseNet_AC(ActorCritic):
 
 
 if __name__ == "__main__":
-    W = H = 224
-    policy = DenseNet_AC(
+    policy = MVCNN_AC(
         name="mvcnn_lstm_ac",
-        n_ft_outpt=64,
+        n_ft_outpt=32,
         n_actions=2,
-        state_size=(4, W, H, 3),
+        state_size=(4, 64, 64, 3),
         trainable=False)
-    V = 4
+    V = 2
+    W = H = 64
     C = 3
     data = np.zeros((V, W, H, C))
-    action = policy.action(data, training=False)
+    action = policy.action(data)
     v = policy.get_vars()
     # print(v)
     for k_var in v:
