@@ -36,7 +36,19 @@ typedef pcl::PointCloud<PointT> PointCloudT;
 typedef pcl::PointXYZL PointLT;
 typedef pcl::PointCloud<PointLT> PointLCloudT;
 
-void _grow(PointCloudT::Ptr cloud, vector<int>& segments_r, int query_idx, search::KdTree<PointT>::Ptr tree, float radius, int segment){
+/**
+    Applies the region growing for a specific segment.
+    @param cloud The point cloud.
+    @param segments_r A vector with the segment values.
+    @param query_idx Index of a point where the region growing should start.
+    @param tree KDTree of the cloud.
+    @param radius Threshold for a region to grow. Neighbour points that have a
+        distance greater than radius will not be considered in the current
+        region.
+    @param segment The current segment that should be assigned to the region.
+*/
+void _grow(PointCloudT::Ptr cloud, vector<int>& segments_r, int query_idx, search::KdTree<PointT>::Ptr tree, float radius, int segment)
+{
     std::vector<int> pointIdxRadiusSearch;
     std::vector<float> pointRadiusSquaredDistance;
 
@@ -62,7 +74,17 @@ void _grow(PointCloudT::Ptr cloud, vector<int>& segments_r, int query_idx, searc
     }
 }
 
-void _region_growing_radius(PointCloudT::Ptr cloud, vector<int>& segments_r, float radius=0.5){
+/**
+    Applies a radius based region growing.
+    @param cloud The point cloud.
+    @param segments_r A vector with the segment values. This will be the result
+        of this function.
+    @param radius Threshold for a region to grow. Neighbour points that have a
+        distance greater than radius will not be considered in the current
+        region.
+*/
+void _region_growing_radius(PointCloudT::Ptr cloud, vector<int>& segments_r, float radius=0.5)
+{
     #ifdef DEBUG
     cout << "resize list" << endl;
     #endif
@@ -93,7 +115,19 @@ void _region_growing_radius(PointCloudT::Ptr cloud, vector<int>& segments_r, flo
     }
 }
 
-bool _vccs(PointCloudT::Ptr cloud, map<int, vector<int>> &segmentsToPointIdxs, map<int, vector<int>> &segmentNeighbours, float voxel_resolution = 0.1f, float seed_resolution = 1.0f, float color_importance = 0.2f, float spatial_importance = 0.4f, float normal_importance = 1.0f){
+/**
+    Applies the VCCS algorithm of Papon et al.
+    @param cloud The point cloud.
+    @param segmentsToPointIdxs Dictionary of point indices per superpoint.
+    @param segmentNeighbours Neighbour superpoints per superpoint.
+    @param voxel_resolution Voxel resolution of the VCCS algorithm.
+    @param seed_resolution Seed resolution of the VCCS algorithm.
+    @param color_importance Color importance of the VCCS algorithm.
+    @param normal_importance Normal importance of the VCCS algorithm.
+    @param spatial_importance Spatial importance of the VCCS algorithm.
+*/
+bool _vccs(PointCloudT::Ptr cloud, map<int, vector<int>> &segmentsToPointIdxs, map<int, vector<int>> &segmentNeighbours, float voxel_resolution = 0.1f, float seed_resolution = 1.0f, float color_importance = 0.2f, float spatial_importance = 0.4f, float normal_importance = 1.0f)
+{
     SupervoxelClustering<PointT> super (voxel_resolution, seed_resolution);
     super.setInputCloud (cloud);
     super.setColorImportance (color_importance);
@@ -152,6 +186,15 @@ bool _vccs(PointCloudT::Ptr cloud, map<int, vector<int>> &segmentsToPointIdxs, m
     return true;
 }
 
+/**
+    Applies the RANSAC algorithm to find a plane.
+    @param cloud The point cloud.
+    @param inliers_ Point indices of plane points.
+    @param model_coefficients_ plane coefficients.
+    @param max_iterations_ Iterations of the RANSAC algorithm.
+    @param threshold_ Quality threshold of the RANSAC algorithm.
+    @param probability_ Inlier probability
+*/
 bool _ransac_plane (PointCloudT::Ptr cloud, std::vector<int> &inliers_, VectorXf& model_coefficients_, int max_iterations_=1000, double threshold_=0.01, double probability_=0.9)
 {
     vector<int> indices(cloud->points.size()) ;
@@ -241,41 +284,11 @@ bool _ransac_plane (PointCloudT::Ptr cloud, std::vector<int> &inliers_, VectorXf
     return (true);
 }
 
-bool _euclidean_cluster(
-        PointCloudT::Ptr cloud,
-        p::list &segment_indxs,
-        float tolerance = 0.03,
-        int min_cluster_size = 1000,
-        int max_cluster_size = 250000
-        ){
-    search::KdTree<PointT>::Ptr tree (new search::KdTree<PointT>);
-    tree->setInputCloud (cloud);
-
-    EuclideanClusterExtraction<PointT> ec;
-    vector<PointIndices> cluster_indices;
-    ec.setClusterTolerance (tolerance);
-    ec.setMinClusterSize (min_cluster_size);
-    ec.setMaxClusterSize (max_cluster_size);
-    ec.setSearchMethod (tree);
-    ec.setInputCloud (cloud);
-    ec.extract (cluster_indices);
-
-    #ifdef DEBUG
-        cout << "n cluster: " << cluster_indices.size() << endl;
-    #endif
-    if (cluster_indices.size() > 1000 || cluster_indices.size() == 0)
-        return false;
-
-    for (vector<PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
-    {
-        p::list l;
-        for (vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
-            l.append(*pit);
-        segment_indxs.append(l);
-    }
-    return true;
-}
-
+/**
+    Converts a numpy ndarray to a pcl point cloud.
+    @param P Numpy array.
+    @param cloud Resulting PCL point cloud.
+*/
 void ndarrayToPCL(np::ndarray P, PointCloudT::Ptr &cloud){
     int n_points = P.shape(0);
     cloud->points.reserve(n_points);
@@ -305,6 +318,11 @@ void ndarrayToPCL(np::ndarray P, PointCloudT::Ptr &cloud){
     cloud->is_dense = true;
 }
 
+/**
+    Transform list of integer values to numpy array with in values.
+    @param indices List of integer values.
+    @return List as np.ndarray.
+*/
 np::ndarray indicesToNDArray(vector<int> indices){
     Py_intptr_t shape[1] = { indices.size() };
     np::ndarray result = np::zeros(1, shape, np::dtype::get_builtin<int>());
@@ -326,8 +344,14 @@ class PCLCloud{
     public:
         PCLCloud(np::ndarray P);
         ~PCLCloud();
+        /**
+            Returns the PCL cloud.
+        */
         inline PointCloudT::Ptr GetPCLCloud(){return this->pcl_cloud;}
         inline void SetNPCloud(np::ndarray P);
+        /**
+            Returns the numpy array of the point cloud.
+        */
         inline np::ndarray GetNPCloud(){return *(this->np_cloud.get());}
         inline void BuildTree();
         inline np::ndarray Search(np::ndarray P);
@@ -350,22 +374,30 @@ PCLCloud::~PCLCloud(){
 #endif
 }
 
+/**
+    Set a new point cloud.
+    @param P Numpy point cloud.
+*/
 void PCLCloud::SetNPCloud(np::ndarray P){
     this->np_cloud = std::make_shared<np::ndarray>(P);
     this->pcl_cloud = PointCloudT::Ptr(new PointCloudT);
     ndarrayToPCL(P, this->pcl_cloud);
 }
 
+/**
+    Build a KdTree of the point cloud.
+*/
 void PCLCloud::BuildTree(){
     this->tree = search::KdTree<PointT>::Ptr(new search::KdTree<PointT>);
     this->tree->setInputCloud (this->pcl_cloud);
 }
 
+/**
+    Insert some points P and the corresponding point indices of the points will
+    be returned if they exist in the cloud.
+    @param P points that can be in the point cloud.
+*/
 np::ndarray PCLCloud::Search(np::ndarray P){
-    /*
-    * Insert some points P and the corresponding point indices of the points
-    * will be returned if they exist in the cloud. 
-    */
     if(!this->tree){
         this->BuildTree();
     }
@@ -403,6 +435,12 @@ np::ndarray PCLCloud::Search(np::ndarray P){
     return np_idxs;
 }
 
+/**
+    Segment a plane.
+    @return Python list with the plane indices, the 4 model coefficients and
+        a flag if the plane segmentation was successful. Hence, the size of the
+        list is 6.
+*/
 p::list get_plane_segment(PCLCloud &pcl_cloud, int max_iterations, double threshold, double probability){
 
 #ifdef DEBUG
@@ -432,15 +470,27 @@ p::list get_plane_segment(PCLCloud &pcl_cloud, int max_iterations, double thresh
     return result;
 }
 
-p::list euclidean_cluster(PCLCloud &pcl_cloud, float tolerance, int min_cluster_size, int max_cluster_size){
-    p::list result;
-
-    bool seg_result = _euclidean_cluster(pcl_cloud.GetPCLCloud(), result, tolerance, min_cluster_size, max_cluster_size);
-    result.append(seg_result);
-
-    return result;
-}
-
+/**
+    Applies the VCCS algorithm of Papon et al.
+    @param pcl_cloud The point cloud.
+    @param voxel_resolution Voxel resolution of the VCCS algorithm.
+    @param seed_resolution Seed resolution of the VCCS algorithm.
+    @param color_importance Color importance of the VCCS algorithm.
+    @param normal_importance Normal importance of the VCCS algorithm.
+    @param spatial_importance Spatial importance of the VCCS algorithm.
+    @return Python list. Foreach superpoint a segment value, its point indices
+        and neighbours are stored in the list. For example, consider this list:
+            - S1 segment_value
+            - S1 point indices
+            - S1 neighbours
+            - S2 segment_value
+            - S2 point indices
+            - S2 neighbours
+            - S3 segment_value
+            - S3 point indices
+            - S3 neighbours
+            - ...
+*/
 p::list vccs(PCLCloud &pcl_cloud, float voxel_resolution, float seed_resolution, float color_importance, float spatial_importance, float normal_importance){
 //p::list vccs(PCLCloud &pcl_cloud){
     #ifdef DEBUG
@@ -480,6 +530,14 @@ p::list vccs(PCLCloud &pcl_cloud, float voxel_resolution, float seed_resolution,
     return seg;
 }
 
+/**
+    Applies a radius based region growing.
+    @param cloud The PCL point cloud.
+    @param radius Threshold for a region to grow. Neighbour points that have a
+        distance greater than radius will not be considered in the current
+        region.
+    @return Segment value for each point in a numpy array.
+*/
 np::ndarray region_growing_radius(PCLCloud &pcl_cloud, float radius){
     #ifdef DEBUG
     cout << "start region growing radius" << endl;
@@ -508,7 +566,6 @@ BOOST_PYTHON_MODULE(segmentation_ext) {
     ;
 
     p::def("get_plane_segment", get_plane_segment);
-    p::def("euclidean_cluster", euclidean_cluster);
     p::def("vccs", vccs);
     p::def("region_growing_radius", region_growing_radius);
 }
