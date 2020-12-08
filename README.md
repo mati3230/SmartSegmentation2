@@ -1,6 +1,6 @@
 # Smart Segmentation 2
 
-This project is developed on a linux system. Hence, most of the manuals where commands are typed in the terminal assuming a linux system. However, this project can also be used on Windows or Mac. To do so, it is recommended to transform the meshes to point clouds and create the cache on a linux system (see Section [PLY2PCD](## PLY2PCD) and [CREATE CACHE](## CREATE CACHE)). Subsequently, the folders with the generated files should be copied to the Windows or Mac system. Note, that the steps in Section [PLY2PCD](## PLY2PCD) and [CREATE CACHE](## CREATE CACHE) only have to be executed if this project is used in combination with the ScanNet dataset [2]. Moreover, errors can occur on Windows or Mac due to the multiprocessing that is used.
+This project is developed on a linux system. Hence, most of the manuals where commands are typed in the terminal assuming a linux system. However, this project can also be used on Windows or Mac. To do so, it is recommended to transform the meshes to point clouds and create the cache on a linux system (see Section [PLY2PCD](PLY2PCD) and [CREATE CACHE](CREATE CACHE)). Subsequently, the folders with the generated files should be copied to the Windows or Mac system. Note, that the steps in Section [PLY2PCD](PLY2PCD) and [CREATE CACHE](CREATE CACHE) only have to be executed if this project is used in combination with the ScanNet dataset [2]. Moreover, errors can occur on Windows or Mac due to the multiprocessing that is used.
 
 ## REQUIREMENTS
 
@@ -18,7 +18,7 @@ This project is developed on a linux system. Hence, most of the manuals where co
 
 ## PCL LIBRARY
 
-The following step is only necessary, if the steps in Section [PLY2PCD](## PLY2PCD) should be executed. We extended the *pcl_mesh_sampling* tool of the PCL that is used to execute the steps in Section [PLY2PCD](## PLY2PCD). Copy the script in the directory */pcl/...* and build the PCL.
+The following step is only necessary, if the steps in Section [PLY2PCD](PLY2PCD) should be executed. We extended the *pcl_mesh_sampling* tool of the PCL that is used to execute the steps in Section [PLY2PCD](PLY2PCD). Copy the script in the directory */pcl/...* and build the PCL.
 
 ## PLY2PCD
 
@@ -133,7 +133,7 @@ It is recommended to use a http routing of the tensorboard to view the training 
 
 ### START OF THE TRAINING WITH POINT CLOUD DATA
 
-We assume that the preprocessing steps in Section [PLY2PCD](## PLY2PCD) and [CREATE CACHE](## CREATE CACHE) are executed. Or that alternatively the output of that processes is stored in the project. This can be the case if using Windows or Mac. Moreover, it is assumed that the [*_args.json*-file](### PREREQUISITES - JSON) is set up. To create a new policy, see the [README.md](./policies/README.md) in the policies folder.
+We assume that the preprocessing steps in Section [PLY2PCD](PLY2PCD) and [CREATE CACHE](CREATE CACHE) are executed. Or that alternatively the output of that processes is stored in the project. This can be the case if using Windows or Mac. Moreover, it is assumed that the [*_args.json*-file](PREREQUISITES - JSON) is set up. To create a new policy, see the [README.md](./policies/README.md) in the policies folder.
 
 To start the training with the remote control, type *python remote_control.py --train_mode=train --train_args=ppo2_args.json --train_types=ppo2_types.json* in a terminal. The options can be printed with *python remote_control.py --help*. After starting the remote training process, the bot will react to the commands and the tensorboard can be routed with [ngrok](https://ngrok.com/download).
 
@@ -141,7 +141,7 @@ The training types can also be tested without the remote control. Type *python t
 
 ### LOGS
 
-The logs will be stored into the directory *./logs/environment_name/train/*. The environment_name is the name of the environment in which the agent has trained. The training progress will be written into a tensorboard file. To open the tensorboard, open a terminal in the logs-directory and type *tensorboard --logdir=.*. Each log-folder is specified by the date of its creation. There is a file with additional informations, e.g. the learning rate, in this folder. It is named *config.txt*. 
+The logs will be stored into the directory *./logs/environment_name/train/*. The environment_name is the name of the environment in which the agent has trained. The training progress will be written into a tensorboard file. To open the tensorboard, open a terminal in the logs-directory and type *tensorboard --logdir=.*. Each log-folder is specified by the date of its creation. There is a file with additional informations, e.g. the learning rate, in this folder. It is named *config.txt*.
 
 ## ACKNOWLEDGEMENTS
 
@@ -152,7 +152,6 @@ This project is sponsored by: German Federal Ministry of Education and Research 
 ## CITATION
 
 If you use this repository, please use the following citation:
-
 
 @inproceedings{Tiator2020,
 
@@ -170,7 +169,7 @@ year = {2020}
 
 }
 
-## REFERENCES   
+## REFERENCES
 
 [1] John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. Proximal Policy Optimization Algorithms. Computing Research Repository (CoRR), jul 2017.
 
