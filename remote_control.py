@@ -2,7 +2,6 @@ from telegram.ext import Updater
 import logging
 from telegram.ext import MessageHandler, Filters
 from optimization.remote_ppo2_trainer import RemotePPO2Trainer
-from optimization.remote_pretrainer import RemotePretrainer
 from optimization.remote_imitation_trainer import RemoteImitationTrainer
 import argparse
 
@@ -12,12 +11,12 @@ parser.add_argument(
     "--train_mode",
     type=str,
     default="train",
-    help="options: train, pretrain, imitation")
+    help="options: train, imitation")
 parser.add_argument(
     "--train_args",
     type=str,
     default="./sample_args/ppo2_args.json",
-    help="file (relative path) to default configuration (e.g. ppo2_args.json or dagger_args.json)")
+    help="file (relative path) to default configuration (e.g. ppo2_args.json)")
 parser.add_argument(
     "--train_types",
     type=str,
@@ -29,7 +28,7 @@ if args.train_mode == "train":
 elif args.train_mode == "imitation":
     rem_trainer = RemoteImitationTrainer(args.train_args, args.train_types)
 else:
-    rem_trainer = RemotePretrainer(args.train_args, args.train_types)
+    raise Exception("Training type not supported.")
 
 
 def on_msg_recv(update, context):
