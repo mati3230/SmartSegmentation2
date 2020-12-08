@@ -9,6 +9,102 @@ import cv2
 import time
 
 class ExpertImitation(BasePretrainer):
+    """This class implements the training with the imitation learning.
+    Basically, supervised learning with a independend variable X and a dependend
+    variable Y is implemented. The expert actions are stored in Y and the
+    observation from the environment are stored in X. The agent shoud learn to 
+    predict the right actions with a cross entropy loss.
+
+    Parameters
+    ----------
+    n_cpus : int
+        Number of agent processes.
+    w_gpu_mem : int
+        Size of gpu memory that is used by the worker processes.
+    expert_type : type
+        Class type of the expert agent.
+    expert_args : dict
+        Arguments to initialize the expert agent.
+    env_type : type
+        Class type of the environment to generate a copy in the agent
+        processes.
+    env_args : dict
+        Input arguments of the environment class to generate a copy in the
+        agent processes.
+    policy_type : type
+        Type of the policy that should be trained to initialize the target
+        policy.
+    policy_args : dictionary
+        Arguments that are used to initialize instances of the policy.
+    model_name : str
+        Name of the neural net.
+    model_dir : str
+        Directory where the models will be stored.
+    log_dir : str
+        Directory where the logs will be saved.
+    n_actions : int
+        Number of available actions.
+    optimizer : tf.keras.optimizers.Optimizer
+        Optimizer such as SGD or ADAM.
+    state_size : tuple(int)
+        Size of an observation from the environment.
+    test_freq : int
+        Number that specifies after how many training updates a test is
+        calculated. Note that we use a train test split.
+    shared_value : multiprocessing.Value
+        Shared value of the multiprocessing library to stop the training
+        process over multi processes.
+    train_summary_writer : tf.summary.SummaryWriter
+        Summary writer to write tensorboard logs.
+    ce_factor : float
+        Factor of the cross entropy loss.
+    beta : float
+        Factor for the L2 regularization.
+    check_numerics : boolean
+        If True, an exception is thrown in case of NaN values.
+    global_norm : float
+        Threshold to clip the gradients according to a maximum global norm.
+    batch_size : int
+        Size of a batch.
+    n_batches : int
+        Number of batches that is used in the training.
+
+    Attributes
+    ----------
+    maxlen : int
+        Number of data samples that is used for the training (n_batches * batch_size).
+    expert : type
+        Instance of the expert.
+    master_process : MasterProcess
+        Instance of the MasterProcess class.
+    learner : BasePolicy
+        The policy that should be optimized.
+    train_step : int
+        Global training step number. Currently equal to epoch.
+    epoch : int
+        Number of training epochs (epoch = trainig with all batches).
+    batch_step : type
+        Training steps with one batch.
+    X : np.ndarray
+        Container to store all observations.
+    y : np.ndarray
+        Container to store all expert actions.
+    masks : np.ndarray
+        Boolean aray. Last step in the episode is marked with False.
+    beta : float
+        Factor for the L2 regularization.
+    ce_factor : float
+        Factor of the cross entropy loss.
+    global_norm : float
+        Threshold to clip the gradients according to a maximum global norm.
+    batch_size : int
+        Size of a batch.
+    state_size : tuple(int)
+        Size of an observation from the environment.
+    n_cpus : int
+        Number of agent processes.
+
+    """
     def __init__(
             self,
             n_cpus,
