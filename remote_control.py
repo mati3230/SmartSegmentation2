@@ -16,7 +16,7 @@ parser.add_argument(
 parser.add_argument(
     "--train_args",
     type=str,
-    default="ppo2_args.json",
+    default="./sample_args/ppo2_args.json",
     help="file (relative path) to default configuration (e.g. ppo2_args.json or dagger_args.json)")
 parser.add_argument(
     "--train_types",

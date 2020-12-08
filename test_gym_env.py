@@ -2,7 +2,7 @@ from optimization.remote_ppo2_trainer import RemotePPO2Trainer
 
 
 if __name__ == "__main__":
-    rem_trainer = RemotePPO2Trainer("ppo2_gym_args.json", "ppo2_types.json")
+    rem_trainer = RemotePPO2Trainer("./sample_args/ppo2_gym_args.json", "ppo2_types.json")
     msg = rem_trainer.execute_command("start")
     if msg == -1:
         raise Exception("Cannot start training.")

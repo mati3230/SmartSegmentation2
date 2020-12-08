@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# Transform the ScanNet meshes to point clouds. The first argument is the path
+# to the ScanNet '${SCANNET_ROOT}/scans'. The second argument is where the
+# clouds should be stored, e.g. './ScannetScenes'. A customized
+# pcl_mesh_sampling script is used.
+
 if [ $# != 2 ] ; then
     echo "Need input of scannet path and target path"
     exit 1

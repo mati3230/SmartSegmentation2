@@ -4,10 +4,8 @@ import numpy as np
 from .utils import save_config
 from .tf_utils import sync
 
-from deprecated import deprecated
 
 class BasePretrainer(ABC):
-    @deprecated
     def __init__(
             self,
             n_cpus,

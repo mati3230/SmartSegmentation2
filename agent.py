@@ -10,6 +10,7 @@ import numpy as np
 import cv2
 
 def main():
+    """Test a trained agent."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--model",
