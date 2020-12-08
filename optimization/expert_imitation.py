@@ -35,6 +35,62 @@ class ExpertImitation(BasePretrainer):
             batch_size=64,
             n_batches=5
             ):
+        """Short summary.
+
+        Parameters
+        ----------
+        n_cpus : int
+            Number of agent processes.
+        w_gpu_mem : int
+            Size of gpu memory that is used by the worker processes.
+        expert_type : type
+            Class type of the expert agent.
+        expert_args : dict
+            Arguments to initialize the expert agent.
+        env_type : type
+            Class type of the environment to generate a copy in the agent
+            processes.
+        env_args : dict
+            Input arguments of the environment class to generate a copy in the
+            agent processes.
+        policy_type : type
+            Type of the policy that should be trained to initialize the target
+            policy.
+        policy_args : dictionary
+            Arguments that are used to initialize instances of the policy.
+        model_name : str
+            Name of the neural net.
+        model_dir : str
+            Directory where the models will be stored.
+        log_dir : str
+            Directory where the logs will be saved.
+        n_actions : int
+            Number of available actions.
+        optimizer : tf.keras.optimizers.Optimizer
+            Optimizer such as SGD or ADAM.
+        state_size : tuple(int)
+            Size of an observation from the environment.
+        test_freq : int
+            Number that specifies after how many training updates a test is
+            calculated. Note that we use a train test split.
+        shared_value : multiprocessing.Value
+            Shared value of the multiprocessing library to stop the training
+            process over multi processes.
+        train_summary_writer : tf.summary.SummaryWriter
+            Summary writer to write tensorboard logs.
+        ce_factor : float
+            Factor of the cross entropy loss.
+        beta : float
+            Factor for the L2 regularization.
+        check_numerics : boolean
+            If True, an exception is thrown in case of NaN values.
+        global_norm : float
+            Threshold to clip the gradients according to a maximum global norm.
+        batch_size : int
+            Size of a batch.
+        n_batches : int
+            Number of batches that is used in the training.
+        """
         super().__init__(
             n_cpus=n_cpus,
             env_type=env_type,
@@ -95,6 +151,22 @@ class ExpertImitation(BasePretrainer):
 
     @tf.function
     def update(self, X_batch, y_batch):
+        """Updates the neural net. Applies supervised learning.
+
+        Parameters
+        ----------
+        X_batch : np.ndarray
+            An array with the input type of the net.
+        y_batch : np.ndarray
+            Array with the expert actions.
+
+        Returns
+        -------
+        tuple(float, float, float)
+            The total loss, the global norm of the gradient and the cross
+            entropy loss.
+
+        """
         with tf.GradientTape() as tape:
             # action_probs: (N, N_ACTIONS)
             # action_probs, _ = self.learner._action_probs(X_batch)
@@ -127,6 +199,14 @@ class ExpertImitation(BasePretrainer):
             return loss, global_norm, ce_loss
 
     def get_batch_idxs(self):
+        """Calculate the batches and the number of batches from the data.
+
+        Returns
+        -------
+        tuple(np.ndarray, int)
+            The indices of the data samples and the number of batches.
+
+        """
         if self.learner.use_lstm:
             batch_indxs = np.where(self.masks == False)[0]
             n_batches = batch_indxs.shape[0]
@@ -140,6 +220,14 @@ class ExpertImitation(BasePretrainer):
         return batch_indxs, n_batches
 
     def train_batches(self, ratios):
+        """Train the policy.
+
+        Parameters
+        ----------
+        ratios : np.ndarray
+            Ratios between the number of taking expert actions and length of the
+            episodes.
+        """
         batch_indxs, n_batches = self.get_batch_idxs()
         for b in range(n_batches):
             if self.learner.use_lstm:
@@ -177,6 +265,7 @@ class ExpertImitation(BasePretrainer):
                     filename=self.model_name + "_" + str(self.best_test_reward) +  "_Imi")
 
     def train_single_cpu(self):
+        """Applies the training with a single CPU."""
         while self.shared_value:
             state = self.env.reset()
             rewards = []
@@ -197,6 +286,7 @@ class ExpertImitation(BasePretrainer):
             self.train_batches(ratios=np.array(rewards)/self.maxlen)
 
     def train_multi_cpu(self, transitions):
+        """Applies the training with different CPUs."""
         n_samples = 0
         rewards = []
         for trans in transitions.values():
@@ -220,6 +310,7 @@ class ExpertImitation(BasePretrainer):
         self.train_batches(ratios=np.array(rewards)/self.maxlen)
 
     def train(self):
+        """Starts the training process."""
         if self.n_cpus == 1:
             self.train_single_cpu()
         else:

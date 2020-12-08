@@ -7,8 +7,8 @@ This project is developed on a linux system. Hence, most of the manuals where co
 * python >= 3.6.8
 * pip
 * doxygen (optional -- to generate the documentation)
-* PCL (optional -- if applying point cloud processing)
-* Boost (optional -- if applying point cloud processing)
+* PCL == 1.9.1 (optional -- if applying point cloud processing)
+* Boost == 1.72.0 (optional -- if applying point cloud processing)
 * ScanNet dataset [2] (optional -- if applying point cloud processing)
 * Telegram (optional -- if remote training with the telegram app should be used)
 

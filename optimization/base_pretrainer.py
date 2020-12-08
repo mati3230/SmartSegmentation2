@@ -22,6 +22,44 @@ class BasePretrainer(ABC):
             check_numerics=False,
             test_freq=100,
             shared_value=None):
+        """Constructor.
+
+        Parameters
+        ----------
+        n_cpus : int
+            Number of agent processes.
+        env_type : type
+            Class type of the environment to generate a copy in the agent
+            processes.
+        env_args : dict
+            Input arguments of the environment class to generate a copy in the
+            agent processes.
+        policy_type : type
+            Type of the policy that should be trained to initialize the target
+            policy.
+        policy_args : dictionary
+            Arguments that are used to initialize instances of the policy.
+        model_name : str
+            Name of the neural net.
+        model_dir : str
+            Directory where the models will be stored.
+        log_dir : str
+            Directory where the logs will be saved.
+        train_summary_writer : tf.summary.SummaryWriter
+            Summary writer to write tensorboard logs.
+        n_actions : int
+            Number of available actions.
+        optimizer : tf.keras.optimizers.Optimizer
+            Optimizer such as SGD or ADAM.
+        check_numerics : boolean
+            If True, an exception is thrown in case of NaN values.
+        test_freq : int
+            Number that specifies after how many training updates a test is
+            calculated. Note that we use a train test split.
+        shared_value : multiprocessing.Value
+            Shared value of the multiprocessing library to stop the training
+            process over multi processes.
+        """
         super().__init__()
         self.n_cpus = n_cpus
         policy_args["trainable"] = True
