@@ -2,6 +2,8 @@ import numpy as np
 
 
 class PsiExpert():
+    """This class implements the expert function that is mentioned in the
+    publication."""
     def __init__(self):
         pass
 

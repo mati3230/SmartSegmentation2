@@ -188,6 +188,55 @@ def load(
 
 
 class DataProvider(environment.base_data_provider.BaseDataProvider):
+    """This class loads the ScanNet dataset data. It returns the point clouds
+    and their ground truth segments.
+
+    Parameters
+    ----------
+    max_scenes : int
+        Number of scenes/point clouds that should be used.
+    verbose : boolean
+        If True, log internal values of this class in the terminal.
+    train_mode : boolean
+        If True, the scenes will be splitted into train and test scenes.
+    train_p : float
+        Percentage of scenes that will be used for training.
+    n_cpus : int
+        Number of cpus that will be used for training.
+    batch_id : int
+        Only use a certain batch with batch_id. The batch size is equal to
+        the number of cpus.
+
+    Attributes
+    ----------
+    train_mode : boolean
+        If True, the scenes will be splitted into train and test scenes.
+    max_scenes : int
+        Number of scenes/point clouds that should be used.
+    scenes : list(str)
+        A list with all available scenes as strings.
+    train_scenes : list(str)
+        Scenes that will be used for training.
+    train_idxs : np.ndarray
+        Shuffled array so that the scene can be querried randomly.
+    train_idx : int
+        Current index of the training scene.
+    test_scenes : list(str)
+        Scenes that will be used for testing.
+    test_idx : int
+        Current index of the test scene.
+    verbose : boolean
+        If True, log internal values of this class in the terminal.
+    P : np.ndarray
+        The current point cloud scene.
+    segments : np.ndarray
+        The current ground truth segment values.
+    id : int
+        Current scene index that is independend of the training mode.
+    current_scene_idx : int
+        Current scene index that will be used if data provider is not in
+        training mode.
+    """
     def __init__(
             self,
             max_scenes=2000,

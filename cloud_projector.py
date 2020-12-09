@@ -8,12 +8,53 @@ from utils import gl_frustum,\
 
 
 class CloudProjector:
+    """Class that produces rendered images from a point cloud.
+    Four rendered images will be produced. Have a look at the publication
+    for the setup of the cameras.
+
+    Parameters
+    ----------
+    state_size : tuple(int)
+        Tuple of integer values. Should be the size of the observation. The
+        width and height is extracted from the elements [1] and [2].
+
+    Attributes
+    ----------
+    width : int
+        Desired width of the rendered images.
+    imgs : np.ndarray
+        Array where the rendered images will be stored.
+    aspect_ratio : float
+        Aspect ratio of the rendered images.
+    M_proj : np.ndarray
+        Projection matrix.
+    angle_1 : float
+        Angle of two opposite cameras.
+    angle_2 : float
+        Angle of two opposite cameras.
+    axis_1 : float
+        First transformation axis of the cameras.
+    axis_2 : float
+        First transformation axis of the cameras.
+    distance : float
+        Offset of the vertical camera height.
+    dist_factor : float
+        Scale the calculated height that result from the calculation on the
+        bounding box.
+    r1 : float
+        Rotation matrix of image number 1.
+    r2 : float
+        Rotation matrix of image number 2.
+    r3 : float
+        Rotation matrix of image number 3.
+    r4 : float
+        Rotation matrix of image number 4.
+
+    """
     def __init__(
             self,
             state_size):
-        """Constructor. Class that produces rendered images from a point cloud.
-        Four rendered images will be produced. Have a look at the publication
-        for the setup of the cameras
+        """Constructor.
 
         Parameters
         ----------
