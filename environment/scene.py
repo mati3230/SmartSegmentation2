@@ -11,10 +11,87 @@ from .utils import\
 
 
 class Scene():
-    """
-    Class to manage (load, save, render) a point cloud scene. We use a C++
+    """Class to manage (load, save, render) a point cloud scene. We use a C++
     interface via boost to use methods of the PCL such as the VCCS
     oversegmentation.
+
+    Parameters
+    ----------
+    id : int
+        The scenes are identified by numbers.
+    get_cloud_and_segments : function
+        The function should return a point cloud and its segments.
+    voxel_r : float
+        Voxel resolution of the VCCS algorithm.
+    seed_r : float
+        Seed resolution of the VCCS algorithm.
+    color_i : float
+        Color importance of the VCCS algorithm.
+    normal_i : float
+        Normal importance of the VCCS algorithm.
+    spatial_i : float
+        Spatial importance of the VCCS algorithm.
+    min_superpoint_size : int
+        Minimum size of a superpoint. Smaller superpoints want be stored
+        in the scene.
+
+    Attributes
+    ----------
+    scene_id : int
+        The scenes are identified by numbers.
+    unsegmented : int
+        Label of points that are unsegmented.
+    error : boolean
+        deprecated.
+    get_cloud_and_segments : function
+        The function should return a point cloud and its segments.
+    voxel_r : float
+        Voxel resolution of the VCCS algorithm.
+    seed_r : float
+        Seed resolution of the VCCS algorithm.
+    color_i : float
+        Color importance of the VCCS algorithm.
+    normal_i : float
+        Normal importance of the VCCS algorithm.
+    spatial_i : float
+        Spatial importance of the VCCS algorithm.
+    min_superpoint_size : int
+        Minimum size of a superpoint. Smaller superpoints want be stored
+        in the scene.
+    P : np.ndarray
+        The point cloud.
+    orig_segments_nrs : np.ndarray
+        Unique segment values in the ground truth segmentation.
+    orig_indices : np.ndarray
+        The start indices of the different segment values.
+    orig_segment_counts : np.ndarray
+        The number of points that have the different segment values.
+    n_P : int
+        The number of points in the point cloud.
+    orig_pcl_cloud : PCLCloud
+        Point cloud interface to use the PCL functions.
+    assigned_segments : np.ndarray
+        Segment values of presegmented points. Presegmentation is conducted
+        with the RANSAC algorithm.
+    superpoint_storage : SuperpointStorage
+        Storage of the superpoints.
+    orig_superpoint_to_segment_nr : list(np.ndarray)
+        Enter a superpoint index and get ground truth segments with a force >0.
+    orig_segment_nr_to_superpoint : dict
+        Insert a segment value of a ground truth segment and get the superpoint
+        that have a force >0 with the inserted segment.
+    n_orig_segments : int
+        Number of ground truth segments.
+    superpoint_coverage : np.ndarray
+        How much points of a orig_segment are covered by a superpoint? Initial
+        forces matrix.
+    orig_segment_to_idx : dict
+        Enter a ground truth segment value and get the corresponding segment
+        index.
+     orig_to_do : deque
+        Ground truth order of main superpoints that should be considered in the
+        superpoint growing environment.
+
     """
 
     def __init__(

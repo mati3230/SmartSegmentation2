@@ -3,10 +3,45 @@ import json
 
 
 class SuperpointStorage:
-    """
-    This class stores the superpoints with their point idxs and neighbours.
-    """
+    """This class stores the superpoints with their point idxs and neighbours.
 
+    Parameters
+    ----------
+    pns_orig: list
+        will be a tuple where the first element is a list of
+        points idxs of the superpoints and the second element is list of
+        neighbour superpoints of the superpoints (pns is shorthand for
+        'p'oints indices and 'n'eighbour's' of a superpoint)
+    sort_mode: boolean
+        if True, an ascending sortation according to the sizes of the
+        superpoints will be calculated.
+
+    Attributes
+    ----------
+    _sort_mode : boolean
+        if True, an ascending sortation according to the sizes of the
+        superpoints will be calculated.
+    _pns_orig : list
+        will be a tuple where the first element is a list of
+        points idxs of the superpoints and the second element is list of
+        neighbour superpoints of the superpoints (pns is shorthand for
+        'p'oints indices and 'n'eighbour's' of a superpoint)
+    _blacklist : list(list(int))
+        Enter a superpoint index and get blacklisted superpoint indices.
+    _lengths : np.ndarray
+        The array contains the cardinalities of the superpoints.
+    _orig_lengths : np.ndarray
+        The array contains the initial cardinalities of the superpoints. Will
+        not be changed.
+    _sorted_idxs : np.ndarray
+        Sorted superpoint indices according to their cardinalities. In this
+        array, the sorted array position are stored. They are calculated by a
+        argsort operation.
+    _orig_sorted_idxs : np.ndarray
+        Ground truth sorted superpoint indices according to their cardinalities.
+        In this array, the sorted array position are stored. They are
+        calculated by a argsort operation.
+    """
     def __init__(self, pns_orig=None, sort_mode=False):
         """
         Constructor.

@@ -2,6 +2,9 @@ from abc import ABC, abstractmethod
 
 
 class BaseDataProvider(ABC):
+    """Abstract class for an environment that uses data from a storage.
+    For example, a realization of this class is used to load and preprocess
+    point cloud data (see '../scannet_provider.py')"""
     def __init__(self):
         super().__init__()
 

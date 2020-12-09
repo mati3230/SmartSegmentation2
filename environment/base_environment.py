@@ -2,7 +2,10 @@ from abc import ABC, abstractmethod
 
 
 class BaseEnvironment(ABC):
-    """ TODO Use OpenAI Gym Environment """
+    """Abstract class with methods that should be brought with an environment.
+    We did not used the gym framework to deny an unnecessary dependency.
+    Currently, we use this framework only for point cloud processing and only
+    need a few abstract methods."""
 
     def __init__(self):
         super().__init__()

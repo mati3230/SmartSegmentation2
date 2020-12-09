@@ -11,6 +11,130 @@ from .scene import Scene
 
 
 class SuperpointGrowingEnv(BaseEnvironment):
+    """A main and a neihgbour superpoint can be unified stepwise. See the
+    publication for more information. Technically, we have the value of a
+    superpoint and its array index. For example, consider the following table:
+    |Superpoint Value|Superpoint Index|
+    |1               |0               |
+    |3               |1               |
+    |12              |2               |
+    ...
+    Hence, the superpoint values can have any int number. However, the
+    superpoint index in the array starts by 0 and so on. Therefore, we often
+    consider the superpoint indices in the code.
+
+    Parameters
+    ----------
+    data_prov_type : BaseDataProvider
+        Type of class BaseDataProvider (see base_data_provider.py for
+        more information).
+    max_scenes : int
+        Number of scenes/point clouds that should be used.
+    train_p : float
+        Specify, how many percent of the scenes/point clouds should be used
+        for training of an agent.
+    voxel_r : float
+        Voxel resolution of the VCCS algorithm.
+    seed_r : float
+        Seed resolution of the VCCS algorithm.
+    color_i : float
+        Color importance of the VCCS algorithm.
+    normal_i : float
+        Normal importance of the VCCS algorithm.
+    spatial_i : float
+        Spatial importance of the VCCS algorithm.
+    min_superpoint_size : int
+        Minimum size of a superpoint. Smaller superpoints want be stored
+        in the scene.
+    object_punishment_factor : float
+        If this factor is >= 0, then the reward will reduced. The reduction
+        takes the mismatch of segmented objects into account.
+    object_punishment_exp : float
+        Value for the exponent to in- or decrease the object punishment.
+    psi_scale : float
+        Scale factor for the degree of imitation. The values 0 or 1 will be
+        returned from this environment with a factor of 1. This could be
+        changed to the values of 0 and .5 with a scale factor of 0.5.
+    batch_id : int
+        Only use a certain batch with batch_id. The batch size is equal to
+        the number of cpus.
+    n_cpus : int
+        Number of cpus that will be used for the training.
+    train_mode : boolean
+        If True, scenes/point clouds will be splitted into training and
+        test scenes.
+
+    Attributes
+    ----------
+    _data_prov : BaseDataProvider
+        Instance of class that provides the point clouds.
+    _unsegmented : int
+        Label of points that are unsegmented.
+    _min_superpoint_size : int
+        deprecated.
+    _object_punishment_factor : float
+        Scale for the punishment when the wrong number of objects are estimated.
+    _object_punishment_exp : float
+        Exponent for the triangular object punishment. A exponent of one will
+        be a linear punishment. Exponents <1 will be a hard punishment. A
+        exponent >1 will be a soft punishment.
+    _psi_scale : float
+        Scale of the psi value.
+    _id_to_scene : dict
+        A scene can be queried by its id (int value).
+    _scene : Scene
+        The current point cloud scene of the environment.
+    _superpoint_segments : np.ndarray
+        Segment of each superpoint.
+    _assigned_segments : np.ndarray
+        The segments values of the points.
+    _n_assigned_segments : int
+        Number of segments that have been assigned.
+    _superpoint_to_segment_nrs : list(list(int))
+        Insert a superpoint index and get the ground truth superpoints where
+        the force is >0.
+    _unified_idxs : list(int)
+        Indices of the superpoints that are unified.
+    _segment_to_superpoint : dict
+        Get the superpoints where the force between the ground truth segment
+        and the superpoints is greater than 0. A ground truth segment has to be
+        inserted as key.
+    _neighbour_segment_idx : int
+        Superpoint index of the neighbour superpoint that can be unified with
+        the main superpoint.
+    _neighbours_to_visit : list
+        List of the neighbour superpoints that should be considered for the
+        next union.
+    _main_segment_idx : int
+        Superpoint index of the main superpoint that can be unified with
+        the neighbour superpoint.
+    _to_do : deque
+        FIFO list of the order of the superpoints that should be considered as
+        next main superpoint.
+    _to_evaluate : list
+        List of superpoints that can be rewarded
+    _current_object : int
+        The current segment value.
+    _reward : float
+        The last reward from the environment
+    _done : boolean
+        Flag if episode is over.
+    _P_idxs : np.ndarray
+        Point indices of the main superpoint.
+    _neighbour_idxs : np.ndarray
+        Point indices of the neighbour superpoint.
+    voxel_r : float
+        Voxel resolution of the VCCS algorithm.
+    seed_r : float
+        Seed resolution of the VCCS algorithm.
+    color_i : float
+        Color importance of the VCCS algorithm.
+    normal_i : float
+        Normal importance of the VCCS algorithm.
+    spatial_i : float
+        Spatial importance of the VCCS algorithm.
+
+    """
 
     def __init__(
             self,
