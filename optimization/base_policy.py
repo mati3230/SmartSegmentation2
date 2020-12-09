@@ -4,6 +4,36 @@ import numpy as np
 
 
 class BasePolicy(ABC):
+    """Class from which a policy should inherit. We assume that a policy
+    consists of a feature extractor and heads. See '../policies/README.md' for
+    more information.
+
+    Parameters
+    ----------
+    name : str
+        Name of the policy.
+    n_ft_outpt : int
+        Number of features that should be calculated by the feature
+        detector.
+    n_actions : int
+        Number of available actions.
+    seed : int
+        Random seed that should be used by the agent processes.
+    stddev : float
+        (Deprecated) Standard deviation of a gaussian with zero mean to
+        initialize the neurons.
+    trainable : boolean
+        If True the value of the neurons can be changed.
+    check_numerics : boolean
+        If True numeric values will be checked in tensorflow calculation to
+        detect, e.g., NaN values.
+    initializer : str
+        Keras initializer that will be used (e.g. orthogonal).
+    mode : str
+        Full or Half. If Half, then only the action without the value will
+        be calculated.
+
+    """
     def __init__(
             self,
             name,

@@ -6,6 +6,91 @@ import math
 
 
 class PPO2():
+    """This class implements methods to optimize a policy with the PPO
+    algorithm.
+
+    Parameters
+    ----------
+    policy_type : type
+        Type of the policy that should be trained to initialize the target
+        policy.
+    policy_args : dictionary
+        Arguments that are used to initialize instances of the policy.
+    n_actions : int
+        Number of available actions.
+    optimizer : tf.keras.optimizers.Optimizer
+        Optimizer such as SGD or ADAM.
+    train_summary_writer : tf.summary.SummaryWriter
+        Summary writer to write tensorboard logs.
+    batch_size : int
+        Number of samples in one batch.
+    global_norm : float
+        Threshold to clip the gradients according to a maximum global norm.
+    check_numerics : boolean
+        If True, an exception is thrown in case of NaN values.
+    gamma : float
+        The discount factor gamma should be between [0, 1].
+    K_epochs : int
+        Number of epochs.
+    eps_clip : float
+        Cliprange epsilon to clip the ratio of the new and old policy in a
+        ppo update.
+    lmbda : float
+        Factor of the generalized advantage estimation that should be
+        between [0, 1].
+    entropy_factor : float
+        Factor to weight the importance of the entropy in the loss
+        function. The higher this factor, the more exploration will be
+        encouraged.
+    value_factor : float
+        Factor to weight the importance of the state value estimation.
+    write_tensorboard : boolean
+        If True, summary will be written.
+    normalize_returns : boolean
+        If True, the expected returns will be normalized in ppo update.
+    normalize_advantages : boolean
+        If True, the advantages will be normalized in ppo update.
+
+    Attributes
+    ----------
+    gamma : float
+        The discount factor gamma should be between [0, 1].
+    n_actions : int
+        Number of available actions.
+    optimizer : tf.keras.optimizers.Optimizer
+        Optimizer such as SGD or ADAM.
+    train_summary_writer : tf.summary.SummaryWriter
+        Summary writer to write tensorboard logs.
+    batch_size : int
+        Number of samples in one batch.
+    global_norm : float
+        Threshold to clip the gradients according to a maximum global norm.
+    check_numerics : boolean
+        If True, an exception is thrown in case of NaN values.
+    K_epochs : int
+        Number of epochs.
+    eps_clip : float
+        Cliprange epsilon to clip the ratio of the new and old policy in a
+        ppo update.
+    lmbda : float
+        Factor of the generalized advantage estimation that should be
+        between [0, 1].
+    entropy_factor : float
+        Factor to weight the importance of the entropy in the loss
+        function. The higher this factor, the more exploration will be
+        encouraged.
+    value_factor : float
+        Factor to weight the importance of the state value estimation.
+    write_tensorboard : boolean
+        If True, summary will be written.
+    normalize_returns : boolean
+        If True, the expected returns will be normalized in ppo update.
+    normalize_advantages : boolean
+        If True, the advantages will be normalized in ppo update.
+    target_policy : BasePolicy
+        Policy, that will be optimized.
+
+    """
     def __init__(
             self,
             policy_type,

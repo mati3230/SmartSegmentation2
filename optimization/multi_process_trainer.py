@@ -8,6 +8,84 @@ import os
 
 
 class MultiProcessTrainer():
+    """Short summary.
+
+    Parameters
+    ----------
+
+    optimizer : tf.keras.optimizers
+        An optimizer such as the Adam optimizer.
+    env_type : type
+        Type of the environment.
+    env_args : dictionary
+        Parameters of the environment.
+    policy_type : type
+        Type of the policy such as a specific actor critic neural net.
+    policy_args : dictionary
+        Arguments of a specific policy.
+    n_actions : int
+        Number of actions that are available in the environment.
+    optimization_algo_type : type
+        Type of the optimization algorithm such as PPO2.
+    log_dir : str
+        Directory where the logs will be saved.
+    model_dir : str
+        Directory where the weights of the nets will be saved.
+    model_name : str
+        Name of the neural net.
+    n_cpus : int
+        Number of CPUs that will be used.
+    w_gpu_mem : int
+        Size of gpu memory that is used by the worker processes.
+    n_batches : int
+        Number of batches that is used in the training.
+    batch_size : int
+        Size of a batch.
+    global_norm : float
+        Threshold to clip the gradients according to a maximum global norm.
+    check_numerics : boolean
+        If True, an exception is thrown in case of NaN values.
+    shared_value : multiprocessing.Value
+        Shared value of the multiprocessing library to stop the training
+        process over multi processes.
+    **kwargs : dict
+        Additional arguments.
+
+    Attributes
+    ----------
+    n_steps : type
+        Description of attribute `n_steps`.
+    train_summary_writer : tf.summary.SummaryWriter
+        Summary writer to write tensorboard logs.
+    optimization_algo : type
+        Class type of the optimization algorithm such as PPO.
+    policy : BasePolicy
+        Policy that will be optimized by the optimization algoroithm such as
+        PPO.
+    test_policy : BasePolicy
+        Policy that is used for testing.
+    master_process : MasterProcess
+        Process that controls the agent processes which sample data. The master
+        process controls also the policy update cycle.
+    env : BaseEnvironment
+        Instance of the environment.
+    best_reward : float
+        Best test reward so far.
+    test_step : int
+        Number of test steps so far.
+    write_tensorboard : boolean
+        If True, tensorboard will be written.
+    model_dir : str
+        Directory where the weights of the nets will be saved.
+    model_name : str
+        Name of the neural net.
+    n_cpus : int
+        Number of CPUs that will be used.
+    shared_value : multiprocessing.Value
+        Shared value of the multiprocessing library to stop the training
+        process over multiple processes.
+
+    """
     def __init__(
             self,
             optimizer,
@@ -67,6 +145,8 @@ class MultiProcessTrainer():
         shared_value : multiprocessing.Value
             Shared value of the multiprocessing library to stop the training
             process over multi processes.
+        **kwargs : dict
+            Additional arguments.
         """
         print("Master Process ID:", os.getpid())
         self.n_cpus = n_cpus

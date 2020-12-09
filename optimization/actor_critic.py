@@ -7,6 +7,43 @@ from .base_policy import BasePolicy
 
 
 class ActorCritic(BasePolicy):
+    """Abstract class of the actor critic architecture. An actor critic policy
+    has two heads. One head for the action estimation. Another head for the
+    value estimation. See '../policies/README.md' for more information.
+    Important: A realisation of the actor critic class should initialize the
+    attribute 'net' in the method 'init_net'.
+
+    Parameters
+    ----------
+    name : str
+        Name of the neural net.
+    n_ft_outpt : int
+        Number of features that should be calculated by the feature
+        detector.
+    n_actions : int
+        Number of actions that are valid in the environment.
+    seed : int
+        Random seed that should be used.
+    stddev : float
+        (Deprecated) Standard deviation of a gaussian with zero mean to
+        initialize the neurons.
+    trainable : boolean
+        If True the value of the neurons can be changed.
+    check_numerics : boolean
+        If True numeric values will be checked in tensorflow calculation to
+        detect, e.g., NaN values.
+    initializer : str
+        Keras initializer that will be used (e.g. orthogonal).
+    mode : str
+        Full or Half. If Half, then only the action without the value will
+        be calculated.
+
+    Attributes
+    ----------
+    net : BaseNet
+        Feature detector of the policy.
+
+    """
     def __init__(
             self,
             name,
@@ -44,6 +81,7 @@ class ActorCritic(BasePolicy):
         mode : str
             Full or Half. If Half, then only the action without the value will
             be calculated.
+
         """
         super().__init__(
             name,

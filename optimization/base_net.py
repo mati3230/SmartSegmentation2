@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 
 
 class BaseNet(ABC):
-    """Short summary.
+    """Abstract class from which a feature detector should inherit. See
+    '../policies/README.md' for more information.
 
     Parameters
     ----------

@@ -5,10 +5,27 @@ from .base_remote_trainer import BaseRemoteTrainer
 
 
 class RemotePPO2Trainer(BaseRemoteTrainer):
+    """This class specifies the train method to use the PPO2
+    algorithm. PPO2-specific parameters are set in the _args.json file such as
+    ppo2_types.json. See BaseRemoteTrainer for more attributes.
+
+    Parameters
+    ----------
+    args_file : str
+        Path (relative or absolute) to a json file where the parameters are
+        specified.
+    types_file : str
+        Path (relative or absolute) to a json file where the types of the
+        parameters are specified.
+
+    Attributes
+    ----------
+    trainer : MultiProcessTrainer
+        Instance of a MultiProcessTrainer to start the training.
+
+    """
     def __init__(self, args_file, types_file):
-        """Constructor. This class specifies the train method for the PPO2
-        algorithm as PPO2-specific parameters have to be set such as the
-        clip-range epsilon (see ppo2_types.json). 
+        """Constructor.
 
         Parameters
         ----------

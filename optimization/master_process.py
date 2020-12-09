@@ -4,6 +4,90 @@ import threading
 
 
 class MasterProcess():
+    """The master process controls the agent processes. The agent processes
+    collect data samples from the environment. The master process uses the data
+    to optimize the policy.
+
+    Parameters
+    ----------
+    n_process : int
+        Number of agent processes.
+    n_samples : int
+        Number of samples that should be acquired.
+    agent_type : type
+        Class type of the agent to generate a copy in the agent processes.
+    agent_args : dict
+        Input arguments of the agent class to generate a copy in the agent
+        processes.
+    env_type : type
+        Class type of the environment to generate a copy in the agent
+        processes.
+    env_args : dict
+        Input arguments of the environment class to generate a copy in the
+        agent processes.
+    model_dir : str
+        Directory where the models will be stored.
+    model_filename : str
+        Filename of a model that will be stored.
+    agent : BasePolicy
+        Agent (i.e. neural network) that should be trained.
+    agent_process_type : type
+        Class type of the agent process.
+    seed : int
+        Random seed that should be used by the agent processes.
+    shared_value : Multiprocessing.Value
+        Flag to indicate that the agent processes should stop the sample
+        collection.
+    agent_process_args : dict
+        Input arguments of an agent process.
+    async_mode : boolean
+        If True, samples will collected while the agent is trained to speed
+        up the procedure, i.e. a non-blocking training process.
+    **kwargs : dict
+        Additional arguments.
+
+    Attributes
+    ----------
+    processes : dict
+        A dictionary where the key is the agent process id and the value is the
+        agent process itself.
+    n_per_process : int
+        Number of samples that should be collected from each process.
+    update_f : type
+        Description of attribute `update_f`.
+    n_process : int
+        Number of agent processes.
+    agent_type : type
+        Class type of the agent to generate a copy in the agent processes.
+    agent_args : dict
+        Input arguments of the agent class to generate a copy in the agent
+        processes.
+    env_type : type
+        Class type of the environment to generate a copy in the agent
+        processes.
+    env_args : dict
+        Input arguments of the environment class to generate a copy in the
+        agent processes.
+    model_dir : str
+        Directory where the models will be stored.
+    model_filename : str
+        Filename of a model that will be stored.
+    seed : int
+        Random seed that should be used by the agent processes.
+    shared_value : Multiprocessing.Value
+        Flag to indicate that the agent processes should stop the sample
+        collection.
+    agent : BasePolicy
+        Agent (i.e. neural network) that should be trained.
+    agent_process_type : type
+        Class type of the agent process.
+    agent_process_args : dict
+        Input arguments of an agent process.
+    async_mode : boolean
+        If True, samples will collected while the agent is trained to speed
+        up the procedure, i.e. a non-blocking training process.
+
+    """
     def __init__(
             self,
             n_process,

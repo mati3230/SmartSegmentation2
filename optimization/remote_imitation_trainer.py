@@ -6,9 +6,21 @@ import numpy as np
 
 
 class RemoteImitationTrainer(BaseRemoteTrainer):
+    """This class specifies the train method for the imitation learning
+    algorithm (see imitation_types.json). See BaseRemoteTrainer for more
+    attributes.
+
+    Parameters
+    ----------
+    args_file : str
+        Path (relative or absolute) to a json file where the parameters are
+        specified.
+    types_file : str
+        Path (relative or absolute) to a json file where the types of the
+        parameters are specified.
+    """
     def __init__(self, args_file, types_file):
-        """Constructor. This class specifies the train method for the imitation
-        learning algorithm (see imitation_types.json).
+        """Constructor.
 
         Parameters
         ----------

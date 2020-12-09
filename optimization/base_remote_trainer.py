@@ -14,10 +14,34 @@ from .utils import\
 
 
 class BaseRemoteTrainer(ABC):
+    """This class executes the training. Moreover, parameters
+    of the training can be changed with user commands. The user commands
+    should be represented as str list.
+
+    Parameters
+    ----------
+    args_file : str
+        Path (relative or absolute) to a json file where the parameters are
+        specified.
+    types_file : str
+        Path (relative or absolute) to a json file where the types of the
+        parameters are specified.
+
+    Attributes
+    ----------
+    train : multiprocessing.Value
+        Shared value of the multiprocessing library to stop the training
+        process.
+    params : dict
+        The parameters of the _args.json file.
+    params_types : dict
+        The types of the parameters that are specified in the _types.json file.
+    train_process : multiprocessing.Process
+        Master Process of the training.
+
+    """
     def __init__(self, args_file, types_file):
-        """Constructor. This class executes the training. Moreover, parameters
-        of the training can be changed with user commands. The user commands
-        should be represented as str list.
+        """Constructor.
 
         Parameters
         ----------

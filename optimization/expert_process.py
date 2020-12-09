@@ -2,6 +2,49 @@ import numpy as np
 from .agent_process import AgentProcess
 
 class ExpertProcess(AgentProcess):
+    """This class stores the expert action in the process of the action
+    selection of the agent. It is stored in the dictionary 'pi_action'
+    under the key 'expert'.
+
+    Parameters
+    ----------
+    conn : Multiprocessing.Pipe
+        Connection to communicate with the master process.
+    id : int
+        ID of the agent process.
+    n_cpus : int
+        Number of agent processes.
+    n_steps : int
+        Number of steps/samples that should be calculated.
+    agent_type : type
+        Class type of the agent to generate a copy in the agent processes.
+    agent_args : dict
+        Input arguments of the agent class to generate a copy in the agent
+        processes.
+    env_type : type
+        Class type of the environment to generate a copy in the agent
+        processes.
+    env_args : dict
+        Input arguments of the environment class to generate a copy in the
+        agent processes.
+    model_dir : str
+        Directory where the models will be stored.
+    model_filename : str
+        Filename of a model that will be stored.
+    seed : int
+        Random seed that should be used by the agent processes.
+    add_args : dict
+        Additional arguments for this class.
+    async_mode : boolean
+        If True, samples will collected while the agent is trained to speed
+        up the procedure, i.e. a non-blocking training process.
+
+    Attributes
+    ----------
+    expert : type
+        Instance of an expert.
+
+    """
     def __init__(
             self,
             conn,
