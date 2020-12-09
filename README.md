@@ -15,8 +15,7 @@ A short video of the point cloud processing can be seen on [YouTube](https://you
 
 ### INSTALL PYTHON REQUIREMENTS
 
-* *pip install -r [requirements_basic.txt](requirements_basic.txt)* to install the basic requirements for using this framework (necessary).
-* *pip install -r [requirements_pcp.txt](requirements_pcp.txt)* to install the requirements for the point cloud processing (optional).
+* *pip install -r [requirements.txt](requirements.txt)* to install the basic requirements for using this framework (necessary).
 * *pip install opencv-python* if you want to render the rendered images of the superpoints in [*agent.py*](agent.py) script (optional).
 * *pip install python-telegram-bot* if you want to use the remote control via telegram (optional).
 * *pip install gym* if you want to use this framework in combination with the gym environment (optional).
