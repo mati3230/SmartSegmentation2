@@ -2,6 +2,7 @@ from environment.segmentation_ext import PCLCloud, region_growing_radius
 import open3d as o3d
 import numpy as np
 import environment
+from environment.base_data_provider import BaseDataProvider
 from environment.utils import\
     generate_colors,\
     render_point_cloud,\
@@ -187,7 +188,7 @@ def load(
     return P, C_color, segments
 
 
-class DataProvider(environment.base_data_provider.BaseDataProvider):
+class DataProvider(BaseDataProvider):
     """This class loads the ScanNet dataset data. It returns the point clouds
     and their ground truth segments.
 
