@@ -2,7 +2,7 @@
 
 This project is developed on a linux system. Hence, most of the manuals where commands are typed in the terminal assuming a linux system. However, this project can also be used on Windows or Mac. To do so, it is recommended to transform the meshes to point clouds and create the cache on a linux system (see Section [PLY2PCD](#ply2pcd) and [CREATE CACHE](#create_cache)). Subsequently, the folders with the generated files should be copied to the Windows or Mac system. Note, that the steps in Section [PLY2PCD](#ply2pcd) and [CREATE CACHE](#create_cache) only have to be executed if this project is used in combination with the ScanNet dataset [2]. Moreover, errors can occur on Windows or Mac due to the multiprocessing that is used.
 
-A short video of the point cloud processing can be seen on [YouTube](https://youtu.be/bwn_s_1VatY). Our prior project can be accessed is also on [GitHub](https://github.com/mati3230/smartsegmentation).
+A short video of the point cloud processing can be seen on [YouTube](https://youtu.be/bwn_s_1VatY). Our prior project can also be accessed on [GitHub](https://github.com/mati3230/smartsegmentation).
 
 ## REQUIREMENTS
 
