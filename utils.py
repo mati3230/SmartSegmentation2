@@ -410,7 +410,7 @@ def grad_to_rad(angle):
     return (angle / 180) * np.pi
 
 
-if __name__ == "__main__":
+def cpu_vs_gpu():
     gpus = tf.config.experimental.list_physical_devices("GPU")
     if gpus:
         try:
@@ -566,3 +566,68 @@ if __name__ == "__main__":
         gpu[j] = t2 - t1
     print("CPU:", np.mean(cpu[2:]), np.std(cpu[2:]))
     print("GPU:", np.mean(gpu[2:]), np.std(gpu[2:]))
+
+
+def test_rendering():
+    import open3d as o3d
+    import cv2
+    mesh = o3d.io.read_triangle_mesh("../PointNetTransfer/sn000000.ply")
+    #o3d.visualization.draw_geometries([mesh])
+    xyz = np.asarray(mesh.vertices)
+    rgb = np.asarray(mesh.vertex_colors)
+
+    bgr = np.zeros(rgb.shape)
+    bgr[:, 0] = rgb[:, 2]
+    bgr[:, 1] = rgb[:, 1]
+    bgr[:, 2] = rgb[:, 0]
+
+    xyz_mean = np.mean(xyz, axis=0)
+    xyz = xyz - xyz_mean
+    #rgb *= 255
+
+    xyz = np.transpose(xyz)
+
+    width = 512
+    height = 512
+    angle_of_view = 140
+    near = 0.1
+    far = 100
+    aspect_ratio = width / height
+
+    r, l, t, b = gl_perspective(
+        angle_of_view=angle_of_view,
+        aspect_ratio=aspect_ratio,
+        n=near)
+    M_proj = gl_frustum(b=b, t=t, l=l, r=r, n=near, f=far)
+
+    angle = grad_to_rad(90)
+    axis = np.array([0, 0, -1])
+
+    R = get_rotation_mat(
+        angle=angle,
+        axis=axis)
+    t=np.array([0,0,-9])
+
+    img = PtoImg(
+        P=xyz,
+        C=bgr,
+        M_proj=M_proj,
+        aspect_ratio=aspect_ratio,
+        width=width,
+        height=height,
+        t=t,
+        rotation_mat=R)
+
+    cv2.imshow("test", img)
+    cv2.waitKey(0) 
+    cv2.destroyAllWindows()
+
+    #print(img[img != 0])
+    img *= 255
+    img = np.floor(img)
+    img = img.astype(np.uint8)
+    cv2.imwrite("./sn000000_rendering.jpg", img)
+
+
+if __name__ == "__main__":
+    test_rendering()
